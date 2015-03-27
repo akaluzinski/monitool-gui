@@ -1,0 +1,26 @@
+<div>
+    <div class="form-group col-md-3" ng-class="{'has-error': yearHasError}">
+        <label>{{ 'Birthday.year' | translate }}</label>
+        <select class="form-control" name="{{yearFieldName}}"
+                data-bv-notempty="true"
+                ng-model="model.year"
+                ng-options="item.value as item.label for item in years">
+        </select>
+    </div>
+    <div class="form-group col-md-3" ng-class="{'has-error': monthHasError}">
+        <label>{{ 'Birthday.month' | translate }}</label>
+        <select class="form-control" name="{{monthFieldName}}"
+                data-bv-notempty="true"
+                ng-model="model.month"
+                ng-options="item.value as item.label for item in months">
+        </select>
+    </div>
+    <div class="form-group col-md-2" ng-class="{'has-error': dayHasError}">
+        <label>{{ 'Birthday.day' | translate }}</label>
+        <select class="form-control" name="{{dayFieldName}}"
+                data-bv-notempty="true"
+                ng-model="model.day"
+                ng-options="item.value as item.label for item in daysInMonth">
+        </select>
+    </div>
+</div>
