@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="monitool.app">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -52,14 +52,9 @@
     </div>
 </nav>
 
-<div class="container" data-monitool-app="app" ng-controller="DashboardCtrl">
-
-    <div class="starter-template">
-        <h1>Bootstrap starter template</h1>
-        <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
-        <p ng-bind="test"></p>
+<div class="container"  >
+    <div ng-view>
     </div>
-
 </div><!-- /.container -->
 
 

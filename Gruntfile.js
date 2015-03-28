@@ -58,6 +58,16 @@ module.exports = function(grunt) {
                         dest: 'public/assets/dist/themes/'
                     }
                 ]
+            },
+            partials: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'app/partials',
+                        src: ['**'],
+                        dest: 'public/assets/dist/views/'
+                    }
+                ]
             }
         },
         html2js: {

@@ -20,6 +20,18 @@
         'monitool.app.directives',
         'monitool.app.configs',
         'monitool.app.controllers'
-    ]);
+    ])
+    .config(['$routeProvider', function($routeProvider) {
+        $routeProvider.
+            when('/dashboard',{
+                templateUrl: '/assets/dist/views/dashboard/dashboard.html',
+                controller: 'DashboardCtrl',
+                access: {
+                    requiresLogin: true
+                }
+            }).
+                    
+            otherwise('/dashboard');
+    }]);
 })();
 
