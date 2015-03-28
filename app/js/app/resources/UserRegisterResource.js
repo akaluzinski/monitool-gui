@@ -2,21 +2,22 @@
     'use strict';
 
     angular.module('monitool.app.resources')
-        .factory('AuthResource', AuthResource);
+        .factory('UserRegisterResource', UserRegisterResource);
 
-    AuthResource.$inject = ['$resource', 'RelativeUrl'];
+    UserRegisterResource.$inject = ['$resource', 'RelativeUrl'];
 
-    function AuthResource($resource, relativeUrl) {
+    function UserRegisterResource($resource, relativeUrl) {
         return $resource(
-            relativeUrl.get('http://monitool.herokuapp.com:80/api/data?access_token=a6wI9F7yeCyVhgN9yXvTCflOEAgitgh8Qorn7mGGEymD9F14X6L0NiWVoOCdK9Sw'),
+            relativeUrl.get('http://monitool.herokuapp.com:80/api/Users/'),
             {
+                email: '@email',
+                password: '@password'
             },
             {
-                list: {
-                    method: 'GET',
+                create: {
+                    method: 'POST',
                     isArray: true
                 }
-
             }
         //5516a0cc71cc640300aaa470
         );

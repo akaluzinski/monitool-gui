@@ -17,7 +17,7 @@ Boolean.parse = function(value) {
     angular.module('monitool.common', [
         'monitool.common.services',
         'monitool.common.configs',
-        'ngAnimate',
+        //'ngAnimate',
         'toastr',
         'ui.bootstrap',
     ]).run([
