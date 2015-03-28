@@ -2,7 +2,6 @@ Monitool GUI
 =======================
 
 
-
 Project setup
 -----------------
 
@@ -37,4 +36,10 @@ Install and copy bower dependencies
 ```
 bower install
 grunt bower:copy
+```
+
+Build project
+---
+```
+grunt build
 ```
