@@ -4,7 +4,7 @@
  */
 (function() {
     'use strict';
-    
+
     var DashboardCtrl = BaseController.extend({
         $scope: null,
         $interval: null,
