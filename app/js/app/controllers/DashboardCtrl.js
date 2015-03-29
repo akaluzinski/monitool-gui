@@ -5,21 +5,24 @@
 (function() {
     'use strict';
     
-    $(document).ready(function() {
-//        $('#primaryStats').dataTable();
-        $('#dataStart').datetimepicker();
-        $('#dataEnd').datetimepicker();
-    });
-    
     var DashboardCtrl = BaseController.extend({
         $scope: null,
+        $interval: null,
 
         /**
          * {@inheritdoc}
          */
-        init: function($scope, toastr) {
+        init: function($scope, $interval, toastr, authResource, dataResource, sensorsResource, DataStorage) {
             this.$scope = $scope;
+            this.$interval = $interval;
             this.notification = toastr;
+            this.resource = authResource;
+            this.dataResource = dataResource;
+            this.sensorsResource = sensorsResource;
+            this.dataStorage = DataStorage;
+
+            $('#startDate').datetimepicker();
+            $('#endDate').datetimepicker();
 
             this._super($scope);
         },
@@ -29,114 +32,130 @@
          */
         defineScope: function() {
             var $scope = this.$scope;
+            var $interval = this.$interval;
             var notification = this.notification;
-            
-            $scope.test = 'asd';
+            var resource = this.resource;
+            var sensorsResource = this.sensorsResource;
+            var dataResource = this.dataResource;
+            var dataStorage = this.dataStorage;
+
+            $scope.search = {
+                nodeName: "",
+                startDate: "",
+                endDate: "",
+                todayDate: false
+            };
+
             $scope.searchNode = '';
             $scope.searchId = '!!';
-            
-            var hosts = [];
-            hosts = [
-                {
-                    "name": "gsdgd",
-                    "dateJoined": "2015-03-01 00:00:00",
-                    "id": 123
-                },
-                {
-                    "name": "jfgj",
-                    "dateJoined": "2015-03-01 00:00:00",
-                    "id": 124
-                },
-                {
-                    "name": "vzsdvs",
-                    "dateJoined": "2015-03-01 00:00:00",
-                    "id": 125
-                },
-                {
-                    "name": "mfgmg",
-                    "dateJoined": "2015-03-01 00:00:00",
-                    "id": 126
-                },
-                {
-                    "name": "cvsdv",
-                    "dateJoined": "2015-03-01 00:00:00",
-                    "id": 123
+
+            $scope.page = 1;
+            $scope.limit = 10;
+
+            $scope.sensorTypes = ["cpu", "mem", "disc"];
+            $scope.hosts = [];
+
+            $scope.token = dataStorage.getToken() || null;
+
+            $scope.sendRequest = function()
+            {
+                $scope.data = [];
+
+                var filter = {
+                    "limit": $scope.limit,
+                    "where": {}
+                };
+
+                if($scope.search.nodeName != "") {
+                    filter.where.sensorId = $scope.getSensorId($scope.search.nodeName);
                 }
-            ];
-//            $http.get('/sensors/').
-//            success(function(data, status, headers, config) {
-//                hosts = data;
-//            }).
-//            error(function(data, status, headers, config) {
-//                
-//            });
-            $scope.hostslist = hosts;
-        
-            $scope.test = 'dashboar';
-            $scope.sensorTypes = ["cpu","mem"];
-            // get hosts from server
-            var primaryData = [];
-            primaryData = [
-                {
-                    "sensorID": 123,
-                    "id": "654634645634",
-                    "date": "2015-03-01 00:00:00",
-                    "cpuLoad": 1.42,
-                    "memLoad": 0.12
-                },
-                {
-                    "sensorID": 124,
-                    "id": "747464",
-                    "date": "2015-03-01 00:01:00",
-                    "cpuLoad": 4.53,
-                    "memLoad": 0.123
-                },
-                {
-                    "sensorID": 125,
-                    "id": "523526",
-                    "date": "2015-03-01 00:01:00",
-                    "cpuLoad": 2.75,
-                    "memLoad": 3.763
-                },
-                {
-                    "sensorID": 126,
-                    "id": "78547",
-                    "date": "2015-03-01 01:00:00",
-                    "cpuLoad": 9.43,
-                    "memLoad": 3.54
-                },
-                {
-                    "sensorID": 123,
-                    "id": "654634645634",
-                    "date": "2015-03-01 01:01:00",
-                    "cpuLoad": 7.43,
-                    "memLoad": 83.43
-                },
-            ];
-//            $http.get('/data/').
-//            success(function(data, status, headers, config) {
-//                primaryData = data;
-//            }).
-//            error(function(data, status, headers, config) {
-//                
-//            });
-            $scope.primaryData = primaryData;
-            
-            
-            
+
+                if($scope.search.node != "") {
+                    filter.where.sensorId = $scope.search.node;
+                }
+
+                if($scope.search.startDate != "") {
+                    filter.where.startDate = { gt : Date($scope.search.startDate) };
+                }
+                console.log($scope.search);
+                if(!$scope.search.todayDate && $scope.search.endDate != "") {
+                    filter.where.endDate = { lt : Date($scope.search.endDate) };
+                }
+
+
+
+                var params = {
+                    access_token: $scope.token
+                };
+                params.filter = angular.fromJson(filter);
+                console.log(params);
+                dataResource.find(params).$promise.then(
+                    function(response){
+                        $scope.primaryData = response;
+                    },
+                    function(response){
+
+                    }
+                );
+            };
+
+
+            $scope.getData = function () {
+
+                var params = {
+                    access_token: $scope.token,
+                    filter: '{ "limit": '+1+' }'
+                };
+
+                dataResource.find(params).$promise.then(
+                    function(response){
+                        $scope.primaryData = response;
+                    }, function(response){
+
+                    }
+                );
+
+            };
+
+            $scope.getSensors = function () {
+                sensorsResource.find({
+                    access_token: $scope.token
+                }).$promise.then(
+                    function(response){
+                        $scope.nodes = response;
+                    }, function(response){
+
+                    }
+                );
+
+            };
+            $scope.getSensors();
+            $scope.getData();
+
             $scope.getSensorName = function(hostId) {
-                console.log( hostId );
-                var host = ($.grep(hosts, function(e){ return e.id == hostId; }))[0];
-                console.log( host );
-                return host.name;
+                var host = ($.grep($scope.nodes, function(e){ return e.name.toLowerCase() == hostName.toLowerCase(); }))[0];
+                if(host != undefined) {
+                    return host.name;
+                }
+                return 'MISSING_HOST';
+            };
+
+            $scope.getSensorId = function(hostName) {
+                var host = ($.grep($scope.nodes, function(e){ return e.name.toLowerCase() == hostName.toLowerCase(); }))[0];
+                if(host != undefined) {
+                    return host.id;
+                }
+                return "";
             };
             $scope.statDetails = function(hostId) {
                 console.log( hostId );
             }
+
         }
+
     });
 
-    DashboardCtrl.$inject = ['$scope', 'toastr', '$http'];
+    DashboardCtrl.$inject = ['$scope', '$interval', 'toastr', 'AuthResource', 'DataResource', 'SensorsResource', 'DataStorage'];
 
     angular.module('monitool.app.controllers')
         .controller('DashboardCtrl', DashboardCtrl);

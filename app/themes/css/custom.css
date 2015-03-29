@@ -54,3 +54,8 @@ body {
     color: #FF181A;
     font-size: 16px;
 }
+.disabled {
+    pointer-events: none;
+    cursor: default;
+    background-color: #EFEFEF;
+}

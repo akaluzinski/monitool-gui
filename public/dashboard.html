@@ -74,12 +74,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="host in primaryData|filter:{ sensorID:searchId }" ng-init="name = getSensorName(host['sensorID'])">
-                            <td>{{name}}</td>
-                            <td ng-repeat="name in sensorTypes">{{host[name+'Load']}}</td>
+                        <tr ng-repeat="host in primaryData|filter:{ sensorID:searchId }">
+                            <td ng-bind="getSensorName(host['sensorId'])"></td>
+                            <td ng-repeat="name in sensorTypes">{{ host[name+'Load'] | number: 3 }}</td>
                             <td>{{host['date']}}</td>
                             <td>
-                                <button ng-click="statDetails(host['sensorID'])">
+                                <button ng-click="statDetails(host['sensorId'])">
                                     <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
                                 </button>
                             </td>
@@ -100,7 +100,7 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="host in complexData |filter:{ name:searchNode }" ng-init="name = getSensorName(host['sensorID'])">
-                            <td>{{name}}</td>
+                            <td ng-bind="getSensorName(host['sensorID'])"></td>
                             <td>{{host['value']}}</td>
                             <td>{{host['timestamp']}}</td>
                             <td>
@@ -125,28 +125,40 @@
                 <h2>Searching</h2>
                 <br/>
                 <div class="">
-                        <input id="hostName" ng-bind="searchNode" name="hostName" class="form-control col-xs-12 col-sm-5" />
-                        <select id="hostId" name="hostId" class="form-control col-xs-12 col-sm-5" ng-model="searchId" >
-                            <option value="!!">Select node</option>
-                            <option ng-repeat="host in hostslist" value="{{host['id']}}">
-                                {{host['name']}}</option>
+                    <div class="col-sm-7">
+                        <input id="hostName" ng-model="search.nodeName" placeholder="search hostname" name="hostName" class="form-control col-xs-12 col-sm-5" />
+                    </div>
+                    <div class="col-sm-5">
+                        <select id="hostId" name="hostId" class="form-control col-xs-12 col-sm-5" ng-model="search.node" >
+                            <option value="">Select node</option>
+                            <option ng-repeat="host in nodes" value="{{ host['id'] }}">{{ host['name'] }}</option>
                         </select>
-
-                        <br/>
-                        <p>Data range</p>
-                        <div class='input-group date' id='dataStart'>
-                            <input type='text' class="form-control" />
+                    </div>
+                    <div class="col-sm-12">
+                        <h4>Data range</h4>
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="input-group date" id="startDate">
+                            <input type="text" ng-model="search.startDate" class="form-control" />
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
                         </div>
-                        <div class='input-group date' id='dataEnd'>
-                            <input type='text' class="form-control" />
-                            <span class="input-group-addon">
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="input-group date" id="endDate">
+                            <input type="text" ng-class="{'disabled': search.todayDate}" ng-model="search.endDate" class="form-control" />
+                            <span class="input-group-addon" ng-class="{'disabled': search.todayDate}">
                                 <span class="glyphicon glyphicon-calendar"></span>
                             </span>
                         </div>
-                        <input type="checkbox" class="form-control checkbox" name="endToday" id="endToday">
+                    </div>
+                    <div class="col-sm-2">
+                        <input type="checkbox" class="form-control checkbox" ng-model="search.todayDate" name="endToday" id="endToday">
+                    </div>
+                    <div class="col-sm-12">
+                        <button class="btn btn-info" ng-click="sendRequest()">Search</button>
+                    </div>
 
                 </div>
             </div>
@@ -177,6 +189,7 @@
 <script src="/assets/dist/lib/angular/angular.js"></script>
 <script src="/assets/dist/lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="/assets/dist/lib/angular-animate/angular-animate.js"></script>
+<script src="/assets/dist/lib/angular-cookies/angular-cookies.js"></script>
 <script src="/assets/dist/lib/angular-filter/angular-filter.js"></script>
 <script src="/assets/dist/lib/angular-resource/angular-resource.js"></script>
 <script src="/assets/dist/lib/angular-route/angular-route.js"></script>
