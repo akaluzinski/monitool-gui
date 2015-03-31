@@ -12,6 +12,7 @@
 
     <!-- Bootstrap core CSS -->
     <link href="/assets/dist/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/dist/lib/angular-loading-bar/loading-bar.css" rel="stylesheet">
     <link href="/assets/dist/lib/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker.min.css" />
     <link href="/assets/dist/lib/datatables/jquery.dataTables.css">
     
@@ -32,27 +33,6 @@
 </head>
 
 <body>
-
-<nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Project name</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </div><!--/.nav-collapse -->
-    </div>
-</nav>
 
 <div class="container" data-monitool-app="app" ng-controller="DashboardCtrl">
     <div class="col-xs-12 col-sm-7">
@@ -75,7 +55,7 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="host in primaryData|filter:{ sensorID:searchId }">
-                            <td ng-bind="getSensorName(host['sensorId'])"></td>
+                            <td ng-bind="host['sensorName']"></td>
                             <td ng-repeat="name in sensorTypes">{{ host[name+'Load'] | number: 3 }}</td>
                             <td>{{host['date']}}</td>
                             <td>
@@ -86,6 +66,21 @@
                         </tr>
                     </tbody>
                 </table>
+                <div class="row form-inline">
+                    <div class="col-sm-9">
+                        <a class="btn btn-info" ng-disabled="page == 0" ng-click="prevResults()">< Prev</a>
+                        Page: <a class="btn btn-default" disabled ng-bind="page+1"></a>
+                        <a class="btn btn-info" ng-click="nextResults()">Next ></a>
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label>Page limit</label>
+                        <select class="form-control" ng-model="limit">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="40">40</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             <div id="complexStats-wrapper" class="table-wrapper complexStats-wrapper table-responsive tab-pane">
                 <table id="complexStats" class="table table-striped" >
@@ -187,6 +182,7 @@
 <script src="/assets/dist/lib/lodash/lodash.js"></script>
 
 <script src="/assets/dist/lib/angular/angular.js"></script>
+<script src="/assets/dist/lib/angular-loading-bar/loading-bar.js"></script>
 <script src="/assets/dist/lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="/assets/dist/lib/angular-animate/angular-animate.js"></script>
 <script src="/assets/dist/lib/angular-cookies/angular-cookies.js"></script>

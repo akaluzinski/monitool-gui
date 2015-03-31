@@ -21,6 +21,7 @@
     "angular-cookies": "*",
     "angular-toastr": "0.5.1",
     "datatables": "~1.10.5",
+    "angular-loading-bar": "0.7.1",
     "eonasdan-bootstrap-datetimepicker": "~4.7.14"
   },
   "exportsOverride": {

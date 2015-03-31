@@ -13,6 +13,7 @@
     //angular.module('monitool.app.routes', ['ngRoute']);
     angular.module('monitool.app.directives', []);
     angular.module('monitool.app', [
+        'angular-loading-bar',
         'ngRoute',
         'ngCookies',
         'monitool.common',
@@ -24,5 +25,8 @@
         //'monitool.app.routes',
         'monitool.app.controllers'
     ]);
+
+
+
 })();
 

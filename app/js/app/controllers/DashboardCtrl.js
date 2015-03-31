@@ -12,7 +12,7 @@
         /**
          * {@inheritdoc}
          */
-        init: function($scope, $interval, toastr, authResource, dataResource, sensorsResource, DataStorage) {
+        init: function($scope, $interval, toastr, authResource, dataResource, sensorsResource, DataStorage, PromiseChain, LoadingBar) {
             this.$scope = $scope;
             this.$interval = $interval;
             this.notification = toastr;
@@ -20,6 +20,8 @@
             this.dataResource = dataResource;
             this.sensorsResource = sensorsResource;
             this.dataStorage = DataStorage;
+            this.promiseChain = PromiseChain;
+            this.loadingBar = LoadingBar;
 
             $('#startDate').datetimepicker();
             $('#endDate').datetimepicker();
@@ -38,6 +40,8 @@
             var sensorsResource = this.sensorsResource;
             var dataResource = this.dataResource;
             var dataStorage = this.dataStorage;
+            var promiseChain = this.promiseChain;
+            var loadingBar = this.loadingBar;
 
             $scope.search = {
                 nodeName: "",
@@ -49,7 +53,7 @@
             $scope.searchNode = '';
             $scope.searchId = '!!';
 
-            $scope.page = 1;
+            $scope.page = 0;
             $scope.limit = 10;
 
             $scope.sensorTypes = ["cpu", "mem", "disc"];
@@ -58,6 +62,21 @@
             $scope.token = dataStorage.getToken() || null;
 
             $scope.sendRequest = function()
+            {
+                promiseChain.addPromise(
+                    dataResource.find($scope.getParams()).$promise,
+                    function(response){
+                        console.log(response);
+                    }
+                );
+                promiseChain.resolve(function(){
+                    // do some stuff after request
+                });
+
+            };
+
+
+            $scope.getParams = function()
             {
                 $scope.data = [];
 
@@ -82,38 +101,48 @@
                     filter.where.endDate = { lt : Date($scope.search.endDate) };
                 }
 
-
-
                 var params = {
                     access_token: $scope.token
                 };
                 params.filter = angular.fromJson(filter);
                 console.log(params);
-                dataResource.find(params).$promise.then(
-                    function(response){
-                        $scope.primaryData = response;
-                    },
-                    function(response){
 
-                    }
-                );
+                return params;
             };
 
 
-            $scope.getData = function () {
+            $scope.getData = function (skip) {
+
+
+                loadingBar.start();
 
                 var params = {
                     access_token: $scope.token,
-                    filter: '{ "limit": '+1+' }'
+                    filter: '{ "limit": '+$scope.limit+', "skip": '+skip+', "order": "date DESC"  }'
                 };
 
-                dataResource.find(params).$promise.then(
+                promiseChain.addPromise(
+                    sensorsResource.find({ access_token: $scope.token }).$promise,
                     function(response){
-                        $scope.primaryData = response;
-                    }, function(response){
-
+                        $scope.nodes = response;
                     }
                 );
+
+                promiseChain.addPromise(
+                    dataResource.find(params).$promise,
+                    function(response){
+                        $scope.primaryData = response;
+                        angular.forEach($scope.primaryData, function(value, key){
+                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
+                        });
+                    }
+                );
+                promiseChain.resolve(function(){
+                    loadingBar.complete();
+                    // do some stuff after request
+                });
+
+
 
             };
 
@@ -122,18 +151,36 @@
                     access_token: $scope.token
                 }).$promise.then(
                     function(response){
-                        $scope.nodes = response;
+                        return response;
                     }, function(response){
 
                     }
                 );
 
             };
-            $scope.getSensors();
-            $scope.getData();
 
-            $scope.getSensorName = function(hostId) {
-                var host = ($.grep($scope.nodes, function(e){ return e.name.toLowerCase() == hostName.toLowerCase(); }))[0];
+            $scope.getData($scope.page);
+
+            $scope.nextResults = function()
+            {
+                $scope.page += 1;
+                $scope.getData($scope.page*$scope.limit);
+            };
+
+            $scope.prevResults = function()
+            {
+                $scope.page -= 1;
+                if($scope.page > 0) {
+                    $scope.getData($scope.page*$scope.limit);
+                }
+            };
+
+            $scope.getSensorName = function(sensorId) {
+
+                if($scope.nodes == undefined) {
+                    return 'MISSING_NODES';
+                }
+                var host = ($.grep($scope.nodes, function(e){ return parseInt(e.id) == parseInt(sensorId); }))[0];
                 if(host != undefined) {
                     return host.name;
                 }
@@ -155,7 +202,7 @@
 
     });
 
-    DashboardCtrl.$inject = ['$scope', '$interval', 'toastr', 'AuthResource', 'DataResource', 'SensorsResource', 'DataStorage'];
+    DashboardCtrl.$inject = ['$scope', '$interval', 'toastr', 'AuthResource', 'DataResource', 'SensorsResource', 'DataStorage', 'PromiseChain', 'cfpLoadingBar'];
 
     angular.module('monitool.app.controllers')
         .controller('DashboardCtrl', DashboardCtrl);
