@@ -13,7 +13,14 @@
                 access_token: '@access_token'
             },
             {
+                findAll: {
+                    method: 'GET',
+                    isArray: true
+                },
                 find: {
+                    params: {
+                        filter: ''
+                    },
                     method: 'GET',
                     isArray: true
                 }

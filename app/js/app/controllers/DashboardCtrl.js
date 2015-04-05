@@ -23,8 +23,8 @@
             this.promiseChain = PromiseChain;
             this.loadingBar = LoadingBar;
 
-            $('#startDate').datetimepicker();
-            $('#endDate').datetimepicker();
+//            $('#startDate').datetimepicker();
+//            $('#endDate').datetimepicker();
 
             this._super($scope);
         },
@@ -44,6 +44,7 @@
             var loadingBar = this.loadingBar;
 
             $scope.search = {
+                node: "",
                 nodeName: "",
                 startDate: "",
                 endDate: "",
@@ -53,8 +54,14 @@
             $scope.searchNode = '';
             $scope.searchId = '!!';
 
+            $scope.activeTable = 0;
+            
+            $scope.where = null;
+            
             $scope.page = 0;
-            $scope.limit = 10;
+            $scope.limit = 5;
+            $scope.complexPage = 0;
+            $scope.complexLimit = 5;
 
             $scope.sensorTypes = ["cpu", "mem", "disc"];
             $scope.hosts = [];
@@ -66,7 +73,11 @@
                 promiseChain.addPromise(
                     dataResource.find($scope.getParams()).$promise,
                     function(response){
-                        console.log(response);
+                        $scope.primaryData = response;
+                        angular.forEach($scope.primaryData, function(value, key){
+                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
+                            $scope.primaryData[key]['date'] = new Date(value['date']);
+                        });
                     }
                 );
                 promiseChain.resolve(function(){
@@ -78,51 +89,71 @@
 
             $scope.getParams = function()
             {
-                $scope.data = [];
-
                 var filter = {
                     "limit": $scope.limit,
+                    order:    "date DESC",
                     "where": {}
                 };
 
                 if($scope.search.nodeName != "") {
-                    filter.where.sensorId = $scope.getSensorId($scope.search.nodeName);
+                    var sensorsId = $scope.getSensorId($scope.search.nodeName, false);
+                    
+                    filter.where.sensorId = sensorsId[0];
                 }
 
                 if($scope.search.node != "") {
                     filter.where.sensorId = $scope.search.node;
                 }
 
+                var startDate = null, endDate = null;
                 if($scope.search.startDate != "") {
-                    filter.where.startDate = { gt : Date($scope.search.startDate) };
+                    startDate = new Date($scope.search.startDate);
                 }
-                console.log($scope.search);
+                
                 if(!$scope.search.todayDate && $scope.search.endDate != "") {
-                    filter.where.endDate = { lt : Date($scope.search.endDate) };
+                    endDate = new Date($scope.search.endDate);
+                } else if($scope.search.todayDate) {
+                    endDate = new Date();
+                }
+                
+                if( startDate !== null && endDate !== null ) {
+                    filter.where.date = { and: [ { gt: startDate }, { lt: endDate } ] };
+                } else if( startDate !== null ) {
+                    filter.where.date = { gt: startDate };
+                } else if( endDate !== null ) {
+                    filter.where.date = { lt: endDate };
                 }
 
                 var params = {
                     access_token: $scope.token
                 };
                 params.filter = angular.fromJson(filter);
-                console.log(params);
 
+                $scope.where = filter.where;
+                
                 return params;
             };
 
 
             $scope.getData = function (skip) {
-
-
                 loadingBar.start();
 
                 var params = {
                     access_token: $scope.token,
-                    filter: '{ "limit": '+$scope.limit+', "skip": '+skip+', "order": "date DESC"  }'
+                    filter: ''
                 };
-
+                var filter = {
+                    limit:    $scope.limit, 
+                    skip:     skip, 
+                    order:    "date DESC"
+                };
+                if( $scope.where !== "" ) {
+                    filter.where = $scope.where;
+                }
+                params.filter = JSON.stringify(filter);
+                
                 promiseChain.addPromise(
-                    sensorsResource.find({ access_token: $scope.token }).$promise,
+                    sensorsResource.findAll({ access_token: $scope.token }).$promise,
                     function(response){
                         $scope.nodes = response;
                     }
@@ -134,6 +165,7 @@
                         $scope.primaryData = response;
                         angular.forEach($scope.primaryData, function(value, key){
                             $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
+                            $scope.primaryData[key]['date'] = new Date(value['date']);
                         });
                     }
                 );
@@ -147,10 +179,11 @@
             };
 
             $scope.getSensors = function () {
-                sensorsResource.find({
+                sensorsResource.findAll({
                     access_token: $scope.token
                 }).$promise.then(
                     function(response){
+                        console.log( response );
                         return response;
                     }, function(response){
 
@@ -170,8 +203,22 @@
             $scope.prevResults = function()
             {
                 $scope.page -= 1;
-                if($scope.page > 0) {
+                if($scope.page >= 0) {
                     $scope.getData($scope.page*$scope.limit);
+                }
+            };
+            
+            $scope.nextComplexResults = function()
+            {
+                $scope.complexPage += 1;
+                $scope.getData($scope.complexPage*$scope.complexLimit);
+            };
+
+            $scope.prevComplexResults = function()
+            {
+                $scope.complexPage -= 1;
+                if($scope.complexPage >= 0) {
+                    $scope.getData($scope.complexPage*$scope.complexLimit);
                 }
             };
 
@@ -186,9 +233,25 @@
                 }
                 return 'MISSING_HOST';
             };
-
-            $scope.getSensorId = function(hostName) {
-                var host = ($.grep($scope.nodes, function(e){ return e.name.toLowerCase() == hostName.toLowerCase(); }))[0];
+            /**
+             * 
+             * @param {type} hostName
+             * @param bool first true (default) - getting first sensorId, false - getting array of sensorIds
+             * @returns {String.id|String}
+             */
+            $scope.getSensorId = function(hostName, first) {
+                var hosts = ($.grep($scope.nodes, function(e){ return e.name.toLowerCase().indexOf( hostName.toLowerCase() ) !== -1; }));
+                if( typeof first !== "undefined" ) {
+                    var ids = [];
+                    for( var i in hosts ) {
+                        var host = hosts[i];
+                        if(host != undefined) {
+                            ids.push( host.id );
+                        }
+                    }
+                    return ids;
+                }
+                var host = hosts[0];
                 if(host != undefined) {
                     return host.id;
                 }

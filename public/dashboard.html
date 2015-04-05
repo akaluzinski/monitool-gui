@@ -35,37 +35,41 @@
 <body>
 
 <div class="container" data-monitool-app="app" ng-controller="DashboardCtrl">
-    <div class="col-xs-12 col-sm-7">
+    <div class="col-sm-12 col-md-7">
         <ul class="btn-group">
-            <li class="btn btn-default active"><a href="#primaryStats-wrapper" data-toggle="tab">Base</a></li>
-            <li class="btn btn-default"><a href="#complexStats-wrapper" data-toggle="tab">Complex</a></li>
+            <li class="btn btn-default active"><a href="#primaryStats-wrapper" data-toggle="tab" ng-click="activeTable=0">Base</a></li>
+            <li class="btn btn-default"><a href="#complexStats-wrapper" data-toggle="tab" ng-click="activeTable=1">Complex</a></li>
         </ul>
         <br/>
         <div class="tab-content">
             <br/>
-            <div id="primaryStats-wrapper" class="active table-wrapper primaryStats-wrapper table-responsive tab-pane">
-                <table id="primaryStats" class="table table-striped" >
-                    <thead>
-                        <tr>
-                            <th>Host</th>
-                            <th ng-repeat="name in sensorTypes">{{name | uppercase}}</th>
-                            <th>Datetime</th>
-                            <th>Options</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="host in primaryData|filter:{ sensorID:searchId }">
-                            <td ng-bind="host['sensorName']"></td>
-                            <td ng-repeat="name in sensorTypes">{{ host[name+'Load'] | number: 3 }}</td>
-                            <td>{{host['date']}}</td>
-                            <td>
-                                <button ng-click="statDetails(host['sensorId'])">
-                                    <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div id="primaryStats-wrapper" class="active tab-pane">
+                <div class="table-wrapper primaryStats-wrapper table-responsive">
+                    <table id="primaryStats" class="table table-striped" >
+                        <thead>
+                            <tr>
+                                <th class="hidden">ID</th>
+                                <th>Host</th>
+                                <th ng-repeat="name in sensorTypes">{{name | uppercase}}</th>
+                                <th>Datetime</th>
+                                <th>Options</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="host in primaryData">
+                                <td ng-bind="host['sensorId']" class="hidden"></td>
+                                <td ng-bind="host['sensorName']"></td>
+                                <td ng-repeat="name in sensorTypes">{{ host[name+'Load'] | number: 3 }}</td>
+                                <td>{{host['date'] | date:'yyyy-MM-dd HH:mm'}}</td>
+                                <td>
+                                    <button ng-click="statDetails(host['sensorId'])">
+                                        <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="row form-inline">
                     <div class="col-sm-9">
                         <a class="btn btn-info" ng-disabled="page == 0" ng-click="prevResults()">< Prev</a>
@@ -74,7 +78,8 @@
                     </div>
                     <div class="form-group col-sm-3">
                         <label>Page limit</label>
-                        <select class="form-control" ng-model="limit">
+                        <select class="form-control" ng-model="limit" ng-change="getData(page)">
+                            <option value="5">5</option>
                             <option value="10">10</option>
                             <option value="20">20</option>
                             <option value="40">40</option>
@@ -82,37 +87,55 @@
                     </div>
                 </div>
             </div>
-            <div id="complexStats-wrapper" class="table-wrapper complexStats-wrapper table-responsive tab-pane">
-                <table id="complexStats" class="table table-striped" >
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Value</th>
-                            <th>Datetime</th>
-                            <th>Options</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="host in complexData |filter:{ name:searchNode }" ng-init="name = getSensorName(host['sensorID'])">
-                            <td ng-bind="getSensorName(host['sensorID'])"></td>
-                            <td>{{host['value']}}</td>
-                            <td>{{host['timestamp']}}</td>
-                            <td>
-                                <button ng-click="statDetails(host['sensorId'])">
-                                    <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div id="complexStats-wrapper" class="tab-pane">
+                <div class="table-wrapper complexStats-wrapper table-responsive">
+                    <table id="complexStats" class="table table-striped" >
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Value</th>
+                                <th>Datetime</th>
+                                <th>Options</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="host in complexData" >
+                                <td ng-bind="getSensorName(host['sensorID'])"></td>
+                                <td>{{host['value']}}</td>
+                                <td>{{host['timestamp'] | date:'yyyy-MM-dd HH:mm'}}</td>
+                                <td>
+                                    <button ng-click="statDetails(host['sensorId'])">
+                                        <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row form-inline">
+                    <div class="col-sm-9">
+                        <a class="btn btn-info" ng-disabled="complexPage == 0" ng-click="prevComplexResults()">< Prev</a>
+                        Page: <a class="btn btn-default" disabled ng-bind="complexPage+1"></a>
+                        <a class="btn btn-info" ng-click="nextComplexResults()">Next ></a>
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label>Page limit</label>
+                        <select class="form-control" ng-model="complexLimit" ng-change="getData(complexPage)">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="40">40</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-xs-12 col-sm-5">
+    <div class="col-sm-12 col-md-5 ">
         <ul class="btn-group">
             <li class="btn btn-default active"><a href="#searching-wrapper" data-toggle="tab">Searching</a></li>
-            <li class="btn btn-default"><a href="#createComplexStat-wrapper" data-toggle="tab">Create complex stat</a></li>
+            <li class="btn btn-default" ng-if="activeTable==1"><a href="#createComplexStat-wrapper" data-toggle="tab">Create complex stat</a></li>
         </ul>
         <br/>
         <div class="tab-content">
@@ -126,27 +149,17 @@
                     <div class="col-sm-5">
                         <select id="hostId" name="hostId" class="form-control col-xs-12 col-sm-5" ng-model="search.node" >
                             <option value="">Select node</option>
-                            <option ng-repeat="host in nodes" value="{{ host['id'] }}">{{ host['name'] }}</option>
+                            <option ng-repeat="host in nodes | unique:'id'" value="{{ host['id'] }}">{{ host['name'] }}</option>
                         </select>
                     </div>
                     <div class="col-sm-12">
                         <h4>Data range</h4>
                     </div>
                     <div class="col-sm-5">
-                        <div class="input-group date" id="startDate">
-                            <input type="text" ng-model="search.startDate" class="form-control" />
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
-                        </div>
+                        <date-time-picker ng-model="search.startDate" data-id="startDate" ></date-time-picker>
                     </div>
-                    <div class="col-sm-5">
-                        <div class="input-group date" id="endDate">
-                            <input type="text" ng-class="{'disabled': search.todayDate}" ng-model="search.endDate" class="form-control" />
-                            <span class="input-group-addon" ng-class="{'disabled': search.todayDate}">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
-                        </div>
+                    <div class="col-sm-5" >
+                        <date-time-picker ng-model="search.endDate" data-id="endDate" ng-class="{'disabled':search.todayDate}" ></date-time-picker>
                     </div>
                     <div class="col-sm-2">
                         <input type="checkbox" class="form-control checkbox" ng-model="search.todayDate" name="endToday" id="endToday">
@@ -156,8 +169,10 @@
                     </div>
 
                 </div>
+                
+                
             </div>
-            <div id="createComplexStat-wrapper" class="tab-pane">
+            <div id="createComplexStat-wrapper" class="tab-pane" ng-if="activeTable==1">
 
             </div>
         </div>
