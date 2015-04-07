@@ -23,9 +23,6 @@
             this.promiseChain = PromiseChain;
             this.loadingBar = LoadingBar;
 
-//            $('#startDate').datetimepicker();
-//            $('#endDate').datetimepicker();
-
             this._super($scope);
         },
 
@@ -73,6 +70,7 @@
                 promiseChain.addPromise(
                     dataResource.find($scope.getParams()).$promise,
                     function(response){
+                        $scope.page = 0;
                         $scope.primaryData = response;
                         angular.forEach($scope.primaryData, function(value, key){
                             $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
@@ -97,8 +95,16 @@
 
                 if($scope.search.nodeName != "") {
                     var sensorsId = $scope.getSensorId($scope.search.nodeName, false);
-                    
-                    filter.where.sensorId = sensorsId[0];
+                    if( sensorsId.length > 1 ) {
+                        delete filter.where.sensorId;
+                        filter.where.or = [];
+                        for( var i in sensorsId ) {
+                            filter.where.or.push({'sensorId':sensorsId[i]});
+                        }
+                    } else {
+                        delete filter.where.or;
+                        filter.where.sensorId = sensorsId[0];
+                    }
                 }
 
                 if($scope.search.node != "") {
@@ -117,11 +123,16 @@
                 }
                 
                 if( startDate !== null && endDate !== null ) {
-                    filter.where.date = { and: [ { gt: startDate }, { lt: endDate } ] };
+                    delete filter.where.date;
+                    filter.where.and = [];
+                    filter.where.and.push({'date':startDate});
+                    filter.where.and.push({'date':endDate});
                 } else if( startDate !== null ) {
-                    filter.where.date = { gt: startDate };
+                    delete filter.where.and;
+                    filter.where.date = startDate;
                 } else if( endDate !== null ) {
-                    filter.where.date = { lt: endDate };
+                    delete filter.where.and;
+                    filter.where.date = endDate;
                 }
 
                 var params = {
@@ -235,9 +246,9 @@
             };
             /**
              * 
-             * @param {type} hostName
+             * @param string hostName
              * @param bool first true (default) - getting first sensorId, false - getting array of sensorIds
-             * @returns {String.id|String}
+             * @returns string|array
              */
             $scope.getSensorId = function(hostName, first) {
                 var hosts = ($.grep($scope.nodes, function(e){ return e.name.toLowerCase().indexOf( hostName.toLowerCase() ) !== -1; }));

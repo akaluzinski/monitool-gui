@@ -35,7 +35,7 @@
 <body>
 
 <div class="container" data-monitool-app="app" ng-controller="DashboardCtrl">
-    <div class="col-sm-12 col-md-7">
+    <div class="col-sm-12 col-md-7" style="margin-bottom:20px;">
         <ul class="btn-group">
             <li class="btn btn-default active"><a href="#primaryStats-wrapper" data-toggle="tab" ng-click="activeTable=0">Base</a></li>
             <li class="btn btn-default"><a href="#complexStats-wrapper" data-toggle="tab" ng-click="activeTable=1">Complex</a></li>
@@ -60,7 +60,7 @@
                                 <td ng-bind="host['sensorId']" class="hidden"></td>
                                 <td ng-bind="host['sensorName']"></td>
                                 <td ng-repeat="name in sensorTypes">{{ host[name+'Load'] | number: 3 }}</td>
-                                <td>{{host['date'] | date:'yyyy-MM-dd HH:mm'}}</td>
+                                <td>{{host['date'] | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                                 <td>
                                     <button ng-click="statDetails(host['sensorId'])">
                                         <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
@@ -103,7 +103,7 @@
                             <tr ng-repeat="host in complexData" >
                                 <td ng-bind="getSensorName(host['sensorID'])"></td>
                                 <td>{{host['value']}}</td>
-                                <td>{{host['timestamp'] | date:'yyyy-MM-dd HH:mm'}}</td>
+                                <td>{{host['timestamp'] | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                                 <td>
                                     <button ng-click="statDetails(host['sensorId'])">
                                         <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
@@ -132,7 +132,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-12 col-md-5 ">
+    <div class="col-sm-12 col-md-5 " style="margin-bottom:20px;">
         <ul class="btn-group">
             <li class="btn btn-default active"><a href="#searching-wrapper" data-toggle="tab">Searching</a></li>
             <li class="btn btn-default" ng-if="activeTable==1"><a href="#createComplexStat-wrapper" data-toggle="tab">Create complex stat</a></li>
