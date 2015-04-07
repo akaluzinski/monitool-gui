@@ -1,8 +1,11 @@
+/**
+ * @author Mateusz Aniołek
+ * @homepage mateusz-aniolek.com
+ */
 (function() {
     'use strict';
 
-    angular.module('monitool.app.resources')
-        .factory('UserLoginResource', UserLoginResource);
+    angular.module('monitool.app.resources').factory('UserLoginResource', UserLoginResource);
 
     UserLoginResource.$inject = ['$resource', 'RelativeUrl'];
 
@@ -19,24 +22,8 @@
                     isArray: false
                 }
             }
-        //5516a0cc71cc640300aaa470
+
         );
 
-        /*
-         * Examples:
-
-        return $resource(apiUrl.get('/foo/:bar'), {
-            bar: '@bar'
-        }, {
-            findDog: { params: {bar: 'dog' }, method: 'POST', isArray: false },
-            findCat: { params: {bar: 'cat' }, method: 'POST', isArray: false },
-            save: {
-                params: { action: 'save' },
-                isArray: false,
-                method: 'POST'
-            }
-        });
-
-         */
     }
 })();
