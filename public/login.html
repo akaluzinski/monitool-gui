@@ -16,6 +16,8 @@
     <!-- Custom styles for this template -->
     <link href="/assets/dist/themes/css/login.css" rel="stylesheet">
 
+    <link href="/assets/dist/lib/angular-toastr/angular-toastr.css" rel="stylesheet">
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -29,18 +31,18 @@
 
     <h1>Monitool Access</h1>
 
-    <form class="form-signin" ng-show="login">
+    <form class="form-signin" ng-show="form">
         <h2 class="form-signin-heading">Sign in</h2>
         <input type="email" id="inputEmail" ng-model="loginData.email" class="form-control" placeholder="Email address" required autofocus>
         <input type="password" id="inputPassword" ng-model="loginData.password" class="form-control" placeholder="Password" required>
         <button class="btn btn-lg btn-primary btn-block" ng-click="login()">Sign in</button>
 
         <br/>
-        <a href="#" ng-click="showRegisterForm()">Sign up!</a>
+        <a href="#" ng-click="form = false">Sign up!</a>
 
     </form>
 
-    <form class="form-signin" ng-hide="login">
+    <form class="form-signin" ng-hide="form">
         <h2 class="form-signin-heading">Sign up</h2>
         <input type="email" id="email" ng-model="registerData.email" class="form-control" placeholder="Email address" required autofocus>
         <input type="password" id="password" ng-model="registerData.password" class="form-control" placeholder="Password" required>
@@ -48,7 +50,7 @@
         <button class="btn btn-lg btn-primary btn-block" ng-click="register()">Sign up</button>
 
         <br/>
-        <a href="#" ng-click="showLoginForm()">Do you have an account? Sign in!</a>
+        <a href="#" ng-click="form = true">Do you have an account? Sign in!</a>
 
     </form>
 
