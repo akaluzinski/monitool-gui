@@ -12,9 +12,10 @@
         /**
          * {@inheritdoc}
          */
-        init: function($scope, $interval, toastr, authResource, dataResource, sensorsResource, DataStorage, PromiseChain, LoadingBar) {
+        init: function($scope, $interval, $location, toastr, authResource, dataResource, sensorsResource, DataStorage, PromiseChain, LoadingBar) {
             this.$scope = $scope;
             this.$interval = $interval;
+            this.$location = $location;
             this.notification = toastr;
             this.resource = authResource;
             this.dataResource = dataResource;
@@ -31,6 +32,7 @@
          */
         defineScope: function() {
             var $scope = this.$scope;
+            var $location = this.$location;
             var $interval = this.$interval;
             var notification = this.notification;
             var resource = this.resource;
@@ -113,13 +115,13 @@
 
                 var startDate = null, endDate = null;
                 if($scope.search.startDate != "") {
-                    startDate = new Date($scope.search.startDate);
+                    startDate = { 'gt': new Date($scope.search.startDate) };
                 }
                 
-                if(!$scope.search.todayDate && $scope.search.endDate != "") {
-                    endDate = new Date($scope.search.endDate);
-                } else if($scope.search.todayDate) {
-                    endDate = new Date();
+                if(!$scope.search.todayDate && $scope.search.endDate != "" && !$scope.search.todayDate) {
+                    endDate = { 'lt': new Date($scope.search.endDate) };
+                } else {
+                    endDate = { 'lt': new Date() };
                 }
                 
                 if( startDate !== null && endDate !== null ) {
@@ -158,7 +160,7 @@
                     skip:     skip, 
                     order:    "date DESC"
                 };
-                if( $scope.where !== "" ) {
+                if( $scope.where !== null && $scope.where !== "" ) {
                     filter.where = $scope.where;
                 }
                 params.filter = JSON.stringify(filter);
@@ -270,13 +272,16 @@
             };
             $scope.statDetails = function(hostId) {
                 console.log( hostId );
-            }
+                // FIXME: change after merge with route branch
+                window.location.href = "/measurement.html?hostId="+hostId;
+//                $location.path( "/measurement" );
+            };
 
         }
 
     });
 
-    DashboardCtrl.$inject = ['$scope', '$interval', 'toastr', 'AuthResource', 'DataResource', 'SensorsResource', 'DataStorage', 'PromiseChain', 'cfpLoadingBar'];
+    DashboardCtrl.$inject = ['$scope', '$interval', '$location', 'toastr', 'AuthResource', 'DataResource', 'SensorsResource', 'DataStorage', 'PromiseChain', 'cfpLoadingBar'];
 
     angular.module('monitool.app.controllers')
         .controller('DashboardCtrl', DashboardCtrl);

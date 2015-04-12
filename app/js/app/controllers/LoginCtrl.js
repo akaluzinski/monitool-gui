@@ -36,37 +36,53 @@
             $scope.loginData = {};
             $scope.registerData = {};
 
-            $scope.login = true;
-
-            $scope.showLoginForm = function() {
-                $scope.login = true;
-            };
-
-            $scope.showRegisterForm = function() {
-                $scope.login = false;
-            };
+            /**
+             * True = login form, False = register form
+             * @type {boolean}
+             */
+            $scope.form = true;
 
             $scope.register = function() {
-                registerResource.create({email: $scope.registerData.email, password: $scope.registerData.password }).$promise.then(function(response){
-                    notification.info("User has been created. You can log in now!");
+                if($scope.registerData.password != $scope.registerData.repassword) {
+                    notification.error("Given passwords are not identical!");
+                    return false;
+                }
+
+                registerResource.create(
+                    {
+                        email: $scope.registerData.email,
+                        password: $scope.registerData.password
+                    }
+                ).$promise.then(function(response){
                     $scope.login = true;
                     $scope.loginData = {};
+                    notification.success("User has been created. You can log in now!");
                 }, function(response){
-                    notification.info('Error');
+                    notification.error(response.data.error.message);
                 });
 
             };
 
             $scope.login = function() {
-                loginResource.login({email: $scope.loginData.email, password: $scope.loginData.password }).$promise.then(function(response){
+                if($scope.loginData.password == "") {
+                    notification.error("Password cannot be empty");
+                    return false;
+                }
+
+                loginResource.login(
+                    {
+                        email: $scope.loginData.email,
+                        password: $scope.loginData.password
+                    }
+                ).$promise.then(function(response){
                     dataStorage.addToken(response.id);
 
                     /**
-                     * @TODO move to dashboard
+                     * @TODO invoke moving to dashboard
                      */
 
                 }, function(response){
-                    notification.info('Error');
+                    notification.error(response.data.error.message);
                 });
             };
 
@@ -76,6 +92,5 @@
 
     LoginCtrl.$inject = ['$scope', 'toastr', '$location', 'DataStorage', 'UserRegisterResource', 'UserLoginResource'];
 
-    angular.module('monitool.app.controllers')
-        .controller('LoginCtrl', LoginCtrl);
+    angular.module('monitool.app.controllers').controller('LoginCtrl', LoginCtrl);
 })();

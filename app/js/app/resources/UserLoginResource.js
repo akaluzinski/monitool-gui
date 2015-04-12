@@ -1,8 +1,11 @@
+/**
+ * @author Mateusz Aniołek
+ * @homepage mateusz-aniolek.com
+ */
 (function() {
     'use strict';
 
-    angular.module('monitool.app.resources')
-        .factory('UserLoginResource', UserLoginResource);
+    angular.module('monitool.app.resources').factory('UserLoginResource', UserLoginResource);
 
     UserLoginResource.$inject = ['$resource', 'RelativeUrl'];
 
@@ -19,6 +22,7 @@
                     isArray: false
                 }
             }
+
         );
 
     }

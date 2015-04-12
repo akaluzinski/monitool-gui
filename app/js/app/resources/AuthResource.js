@@ -1,3 +1,7 @@
+/**
+ * @author Mateusz Aniołek
+ * @homepage mateusz-aniolek.com
+ */
 (function() {
     'use strict';
 
