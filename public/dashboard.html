@@ -48,8 +48,8 @@
                     <table id="primaryStats" class="table table-striped" >
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th class="hidden">Host</th>
+                                <th class="hidden">ID</th>
+                                <th>Host</th>
                                 <th ng-repeat="name in sensorTypes">{{name | uppercase}}</th>
                                 <th>Datetime</th>
                                 <th>Options</th>
@@ -57,8 +57,8 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="host in primaryData">
-                                <td ng-bind="host['sensorId']" ></td>
-                                <td ng-bind="host['sensorName']" class="hidden"></td>
+                                <td ng-bind="host['sensorId']" class="hidden"></td>
+                                <td ng-bind="host['sensorName']"></td>
                                 <td ng-repeat="name in sensorTypes">{{ host[name+'Load'] | number: 3 }}</td>
                                 <td>{{host['date'] | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                                 <td>
@@ -101,9 +101,10 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="host in complexData" >
-                                <td ng-bind="getSensorName(host['sensorID'])"></td>
-                                <td>{{host['value']}}</td>
-                                <td>{{host['timestamp'] | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                <td>{{ getSensorName(host['sensorID']) }} ({{ host['period']/1000 }}s, {{ host['repeat']/1000 }}s)</td>
+                                <td>{{ host['itemType'] }}</td>
+                                <td>{{ host['value'] }}</td>
+                                <td>{{ host['timestamp'] | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                                 <td>
                                     <button ng-click="statDetails(host['sensorId'])">
                                         <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
@@ -132,7 +133,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-12 col-md-5 " style="margin-bottom:20px;">
+    <div class="col-sm-12 col-md-5 ">
         <ul class="btn-group">
             <li class="btn btn-default active"><a href="#searching-wrapper" data-toggle="tab">Searching</a></li>
             <li class="btn btn-default" ng-if="activeTable==1"><a href="#createComplexStat-wrapper" data-toggle="tab">Create complex stat</a></li>
@@ -191,7 +192,6 @@
 <script src="/assets/dist/lib/bootstrap/js/bootstrap.min.js"></script>
 <script src="/assets/dist/lib/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
  
-
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <!--<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
 
