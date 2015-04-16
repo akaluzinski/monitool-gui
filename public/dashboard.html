@@ -94,20 +94,24 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Type</th>
-                                <th>Value</th>
-                                <th>Datetime</th>
+                                <th>Period</th>
+                                <th>Interval</th>
                                 <th>Options</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="host in complexData" >
-                                <td>{{ getSensorName(host['sensorID']) }} ({{ host['period']/1000 }}s, {{ host['repeat']/1000 }}s)</td>
+                                <td>{{ host['sensorName'] }}</td>
                                 <td>{{ host['itemType'] }}</td>
-                                <td>{{ host['value'] }}</td>
-                                <td>{{ host['timestamp'] | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                <td>{{ host['period']/1000 }}s</td>
+                                <td>{{ host['repeat']/1000 }}s</td>
                                 <td>
-                                    <button ng-click="statDetails(host['sensorId'])">
+                                    <button ng-click="complexStatDetails(host['sensorId'])">
                                         <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                                    </button>
+
+                                    <button ng-show="host['removeAllow']" ng-click="removeComplexData(host['id'])">
+                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                                     </button>
                                 </td>
                             </tr>

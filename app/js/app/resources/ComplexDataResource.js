@@ -23,6 +23,10 @@
                     },
                     method: 'GET',
                     isArray: true
+                },
+                remove: {
+                    method: 'DELETE',
+                    isArray: true
                 }
             }
         );

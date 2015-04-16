@@ -21,6 +21,15 @@
                 return cookiesProvider.get('token');
             },
 
+            addIdentity: function(identity) {
+                console.log(identity);
+                cookiesProvider.put('identity', identity);
+            },
+
+            getIdentity: function() {
+                return cookiesProvider.get('identity');
+            },
+
             getItems: function() {
                 return items;
             },

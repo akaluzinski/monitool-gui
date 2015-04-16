@@ -220,11 +220,12 @@
                 promiseChain.addPromise(
                     complexDataResource.find(params).$promise,
                     function(response){
-
+                        var user_id = dataStorage.getIdentity();
                         $scope.complexData = response;
                         angular.forEach($scope.complexData, function(value, key){
                             $scope.complexData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
                             $scope.complexData[key]['date'] = new Date(value['date']);
+                            $scope.complexData[key]['removeAllow'] = (user_id == value['userId'] ? true : false);
                         });
                     }
                 );
@@ -233,6 +234,18 @@
                     // do some stuff after request
                 });
 
+            };
+
+            $scope.removeComplexData = function(id) {
+                complexDataResource.remove({id: id}).$promise.then(
+                    function(response) {
+                        $scope.getData($scope.page);
+                        $scope.getComplexData($scope.page);
+                    },function(response) {
+                        notification.error(response);
+                    }
+
+                );
             };
 
             $scope.getSensors = function () {
