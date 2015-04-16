@@ -100,7 +100,7 @@
                 };
 
                 if($scope.search.nodeName != "") {
-                  complexDataResource, userRegisterResource  var sensorsId = $scope.getSensorId($scope.search.nodeName, false);
+                    var sensorsId = $scope.getSensorId($scope.search.nodeName, false);
                     if( sensorsId.length > 1 ) {
                         delete filter.where.sensorId;
                         filter.where.or = [];
