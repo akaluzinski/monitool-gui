@@ -253,7 +253,6 @@
                     access_token: $scope.token
                 }).$promise.then(
                     function(response){
-                        console.log( response );
                         return response;
                     }, function(response){
 
@@ -327,10 +326,7 @@
             };
 
             $scope.statDetails = function(hostId) {
-                console.log( hostId );
-                // FIXME: change after merge with route branch
-                window.location.href = "/measurement.html?hostId="+hostId;
-//                $location.path( "/measurement" );
+                $location.path( "/measurement/" + hostId ).replace();
             };
 
             $scope.getData($scope.page);
@@ -338,7 +334,7 @@
 
             $scope.logout = function() {
                 dataStorage.removeToken();
-            }
+            };
         }
 
     });

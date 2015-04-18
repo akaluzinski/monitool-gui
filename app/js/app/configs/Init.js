@@ -15,12 +15,9 @@
                     if (next.access !== undefined) {
                         authorised = AuthProvider.isLoggedIn(); 
                         var route = next.$$route.originalPath.replace('/','');
-                        
                         if (authorised) {
                             if( route === 'login' || route === 'register' ) {
                                 $location.path('/dashboard').replace();
-                            } else {
-                                $location.path(next.$$route.originalPath);
                             }
                         } else {
                             if( route === 'register' ) {

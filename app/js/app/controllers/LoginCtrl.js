@@ -82,12 +82,7 @@
                     }
                 ).$promise.then(function(response){
                     dataStorage.addToken(response.id);
-
-                    /**
-                     * @TODO invoke moving to dashboard
-                     */
                     $location.path('/dashboard').replace();
-
                 }, function(response){
                     notification.error(response.data.error.message);
                 });
