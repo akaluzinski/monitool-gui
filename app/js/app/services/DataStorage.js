@@ -21,6 +21,10 @@
                 return cookiesProvider.get('token');
             },
 
+            removeToken: function() {
+                return cookiesProvider.remove('token');
+            },
+
             getItems: function() {
                 return items;
             },

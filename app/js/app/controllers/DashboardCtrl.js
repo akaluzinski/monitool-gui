@@ -11,10 +11,11 @@
         /**
          * {@inheritdoc}
          */
-        init: function($scope, toastr, authResource) {
+        init: function($scope, toastr, authResource, DataStorage) {
             this.$scope = $scope;
             this.notification = toastr;
             this.resource = authResource;
+            this.dataStorage = DataStorage;
 
             this._super($scope);
         },
@@ -26,6 +27,7 @@
             var $scope = this.$scope;
             var notification = this.notification;
             var resource = this.resource;
+            var dataStorage = this.dataStorage;
             $scope.test = 'asd';
 
             $scope.tesparam = 'aa';
@@ -37,11 +39,23 @@
                  });
             }
 
+            $scope.logout = function() {
+                dataStorage.removeToken();
+            }
         }
     });
 
-    DashboardCtrl.$inject = ['$scope', 'toastr', 'AuthResource'];
+    DashboardCtrl.$inject = ['$scope', 'toastr', 'AuthResource', 'DataStorage'];
 
     angular.module('monitool.app.controllers')
-        .controller('DashboardCtrl', DashboardCtrl);
+        .controller('DashboardCtrl', DashboardCtrl)
+        .config(['$routeProvider', function($routeProvider) {
+            $routeProvider.when('/dashboard',{
+                templateUrl: '/assets/dist/views/dashboard/dashboard.html',
+                controller: 'DashboardCtrl',
+                access: {
+                    requiresLogin: true
+                }
+            });
+        }]);
 })();

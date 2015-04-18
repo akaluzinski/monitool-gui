@@ -2,34 +2,18 @@
     'use strict';
 
     angular.module('monitool.app.services')
-        .factory('DataStorage', DataStorage);
+        .factory('AuthProvider', AuthProvider);
 
-    DataStorage.$inject = ['$cookieStore', '$timeout'];
+    AuthProvider.$inject = [ 'DataStorage' ];
 
-    function DataStorage($cookieStore, $timeout)
+    function AuthProvider(DataStorage)
     {
-        var items = [];
-        var cookiesProvider = $cookieStore;
+        var dataStorage = DataStorage;
+        
         return {
 
-            addToken: function(token) {
-                console.log(token);
-                cookiesProvider.put('token', token);
-            },
-
-            getToken: function() {
-                return cookiesProvider.get('token');
-            },
-
-            getItems: function() {
-                return items;
-            },
-
-            addItem: function(name, value) {
-                items.push({
-                    name: name,
-                    value: value
-                });
+            isLoggedIn: function() {
+                return typeof dataStorage.getToken() !== "undefined" ? true : false;
             }
 
         };
