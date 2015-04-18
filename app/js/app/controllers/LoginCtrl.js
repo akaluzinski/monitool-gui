@@ -39,7 +39,6 @@
             $scope.goTo = function(event,route) {
                 event.stopPropagation();
                 event.preventDefault();
-                console.log( route );
                 if( route === 'register' ) {
                     $location.path('/register').replace();
                 } else if( route === 'login' ) {
