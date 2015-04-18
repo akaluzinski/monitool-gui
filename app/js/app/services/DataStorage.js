@@ -21,6 +21,8 @@
                 return cookiesProvider.get('token');
             },
 
+            removeToken: function() {
+                return cookiesProvider.remove('token');
             addIdentity: function(identity) {
                 console.log(identity);
                 cookiesProvider.put('identity', identity);

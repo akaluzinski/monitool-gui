@@ -58,6 +58,16 @@ module.exports = function(grunt) {
                         dest: 'public/assets/dist/themes/'
                     }
                 ]
+            },
+            partials: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'app/partials',
+                        src: ['**'],
+                        dest: 'public/assets/dist/views/'
+                    }
+                ]
             }
         },
         html2js: {
@@ -118,7 +128,9 @@ module.exports = function(grunt) {
                 'public/assets/dist/img',
                 'public/assets/dist/js',
                 'public/assets/dist/themes',
-                'public/assets/dist/vendor'
+                'public/assets/dist/vendor',
+                'public/assets/dist/views',
+                'public/assets/dist/lib'
             ],
             prod: [
                 'public/assets/dist/js'
@@ -141,6 +153,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', [
         'copy:themes',
         'copy:components2dist',
+        'copy:partials',
         'ngconstant',
         'html2js',
         'concat'
@@ -150,6 +163,7 @@ module.exports = function(grunt) {
         'bower:copy',
         'copy:themes',
         'copy:components2dist',
+        'copy:partials',
         'ngconstant',
         'html2js',
         'concat',

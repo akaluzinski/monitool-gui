@@ -336,6 +336,9 @@
             $scope.getData($scope.page);
             $scope.getComplexData($scope.page);
 
+            $scope.logout = function() {
+                dataStorage.removeToken();
+            }
         }
 
     });
@@ -343,5 +346,14 @@
     DashboardCtrl.$inject = ['$scope', '$interval', '$location', 'toastr', 'AuthResource', 'DataResource', 'ComplexDataResource', 'UserRegisterResource', 'SensorsResource', 'DataStorage', 'PromiseChain', 'cfpLoadingBar'];
 
     angular.module('monitool.app.controllers')
-        .controller('DashboardCtrl', DashboardCtrl);
+        .controller('DashboardCtrl', DashboardCtrl)
+        .config(['$routeProvider', function($routeProvider) {
+            $routeProvider.when('/dashboard',{
+                templateUrl: '/assets/dist/views/dashboard/dashboard.html',
+                controller: 'DashboardCtrl',
+                access: {
+                    requiresLogin: true
+                }
+            });
+        }]);
 })();
