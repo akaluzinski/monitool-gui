@@ -1,12 +1,12 @@
 <div class="col-sm-12 col-md-7" style="margin-bottom:20px;">
     <ul class="btn-group">
-        <li class="btn btn-default active"><a href="#primaryStats-wrapper" data-toggle="tab" ng-click="activeTable=0">Base</a></li>
-        <li class="btn btn-default"><a href="#complexStats-wrapper" data-toggle="tab" ng-click="activeTable=1">Complex</a></li>
+        <li class="btn btn-default active"><a showtab="" href="#primaryStats-wrapper" data-toggle="tab" ng-click="activeTable=0">Base</a></li>
+        <li class="btn btn-default"><a showtab="" href="#complexStats-wrapper" data-toggle="tab" ng-click="activeTable=1">Complex</a></li>
     </ul>
     <br/>
     <div class="tab-content">
         <br/>
-        <div id="primaryStats-wrapper" class="active tab-pane">
+        <div id="primaryStats-wrapper" class="tab-pane" ng-class="{active: activeTable==0}">
             <div class="table-wrapper primaryStats-wrapper table-responsive">
                 <table id="primaryStats" class="table table-striped" >
                     <thead>
@@ -50,7 +50,7 @@
                 </div>
             </div>
         </div>
-        <div id="complexStats-wrapper" class="tab-pane">
+        <div id="complexStats-wrapper" class="tab-pane" ng-class="{active: activeTable==1}">
             <div class="table-wrapper complexStats-wrapper table-responsive">
                 <table id="complexStats" class="table table-striped" >
                     <thead>
@@ -102,12 +102,12 @@
 </div>
 <div class="col-sm-12 col-md-5 ">
     <ul class="btn-group">
-        <li class="btn btn-default active"><a href="#searching-wrapper" data-toggle="tab">Searching</a></li>
-        <li class="btn btn-default" ng-if="activeTable==1"><a href="#createComplexStat-wrapper" data-toggle="tab">Create complex stat</a></li>
+        <li class="btn btn-default active"><a showtab="" href="#searching-wrapper" data-toggle="tab">Searching</a></li>
+        <li class="btn btn-default" ng-if="activeTable==1"><a showtab="" href="#createComplexStat-wrapper" data-toggle="tab">Create complex stat</a></li>
     </ul>
     <br/>
     <div class="tab-content">
-        <div id="searching-wrapper" class="tab-pane active" ng-class="{'active':activeTable!=1}">
+        <div id="searching-wrapper" class="tab-pane active">
             <h2>Searching</h2>
             <br/>
             <div class="">
@@ -140,7 +140,7 @@
 
 
         </div>
-        <div id="createComplexStat-wrapper" class="tab-pane" ng-if="activeTable==1">
+        <div id="createComplexStat-wrapper" class="tab-pane">
 
         </div>
     </div>
