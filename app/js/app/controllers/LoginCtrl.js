@@ -36,12 +36,18 @@
             $scope.loginData = {};
             $scope.registerData = {};
 
-            /**
-             * True = login form, False = register form
-             * @type {boolean}
-             */
-            $scope.form = true;
-
+            $scope.goTo = function(event,route) {
+                event.stopPropagation();
+                event.preventDefault();
+                if( route === 'register' ) {
+                    $location.path('/register').replace();
+                } else if( route === 'login' ) {
+                    $location.path('/login').replace();
+                } else if( route === 'dashboard' ) {
+                    $location.path('/dashboard').replace();
+                }
+            };
+            
             $scope.register = function() {
                 if($scope.registerData.password != $scope.registerData.repassword) {
                     notification.error("Given passwords are not identical!");
@@ -80,17 +86,36 @@
                     /**
                      * @TODO invoke moving to dashboard
                      */
+                    $location.path('/dashboard').replace();
 
                 }, function(response){
                     notification.error(response.data.error.message);
                 });
             };
 
-
+            
         }
     });
 
     LoginCtrl.$inject = ['$scope', 'toastr', '$location', 'DataStorage', 'UserRegisterResource', 'UserLoginResource'];
 
-    angular.module('monitool.app.controllers').controller('LoginCtrl', LoginCtrl);
+    angular.module('monitool.app.controllers')
+        .controller('LoginCtrl', LoginCtrl)
+        .config(['$routeProvider', function($routeProvider) {
+            $routeProvider.
+                when('/login',{
+                    templateUrl: '/assets/dist/views/auth/login.html',
+                    controller: 'LoginCtrl',
+                    access: {
+                        requiresLogin: false
+                    }
+                }).
+                when('/register',{
+                    templateUrl: '/assets/dist/views/auth/register.html',
+                    controller: 'LoginCtrl',
+                    access: {
+                        requiresLogin: false
+                    }
+                });
+        }]);
 })();
