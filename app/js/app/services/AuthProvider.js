@@ -4,13 +4,22 @@
     angular.module('monitool.app.services')
         .factory('DataStorage', DataStorage);
 
-    DataStorage.$inject = [];
+    DataStorage.$inject = ['$cookieStore', '$timeout'];
 
-    function DataStorage()
+    function DataStorage($cookieStore, $timeout)
     {
         var items = [];
-
+        var cookiesProvider = $cookieStore;
         return {
+
+            addToken: function(token) {
+                console.log(token);
+                cookiesProvider.put('token', token);
+            },
+
+            getToken: function() {
+                return cookiesProvider.get('token');
+            },
 
             getItems: function() {
                 return items;

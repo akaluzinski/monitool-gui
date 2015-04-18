@@ -1,24 +1,28 @@
+/**
+ * @author Mateusz Aniołek
+ * @homepage mateusz-aniolek.com
+ */
 (function() {
     'use strict';
 
     angular.module('monitool.app.resources')
         .factory('AuthResource', AuthResource);
 
-    AuthResource.$inject = ['$resource', 'ApiUrl'];
+    AuthResource.$inject = ['$resource', 'RelativeUrl'];
 
-    function AuthResource($resource, apiUrl) {
+    function AuthResource($resource, relativeUrl) {
         return $resource(
-            apiUrl.get('/frontend/payment/getServices'),
+            relativeUrl.get('http://monitool.herokuapp.com:80/api/data?access_token=a6wI9F7yeCyVhgN9yXvTCflOEAgitgh8Qorn7mGGEymD9F14X6L0NiWVoOCdK9Sw'),
             {
-
             },
             {
-                query: {
-                    isArray: false
+                list: {
+                    method: 'GET',
+                    isArray: true
                 }
 
             }
-
+        //5516a0cc71cc640300aaa470
         );
 
         /*
