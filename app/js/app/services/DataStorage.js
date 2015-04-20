@@ -21,8 +21,25 @@
                 return cookiesProvider.get('token');
             },
 
+            removeToken: function() {
+                return cookiesProvider.remove('token');
+            },
+            
+            addIdentity: function(identity) {
+                console.log(identity);
+                cookiesProvider.put('identity', identity);
+            },
+
+            getIdentity: function() {
+                return cookiesProvider.get('identity');
+            },
+
             getItems: function() {
                 return items;
+            },
+
+            getItem: function(name) {
+                return $.grep(items, function(e){ return e.name === name; })[0].value;
             },
 
             addItem: function(name, value) {

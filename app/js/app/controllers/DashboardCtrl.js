@@ -12,13 +12,15 @@
         /**
          * {@inheritdoc}
          */
-        init: function($scope, $interval, $location, toastr, authResource, dataResource, sensorsResource, DataStorage, PromiseChain, LoadingBar) {
+        init: function($scope, $interval, $location, toastr, authResource, dataResource, complexDataResource, userRegisterResource, sensorsResource, DataStorage, PromiseChain, LoadingBar) {
             this.$scope = $scope;
             this.$interval = $interval;
             this.$location = $location;
             this.notification = toastr;
             this.resource = authResource;
             this.dataResource = dataResource;
+            this.complexDataResource = complexDataResource;
+            this.userRegisterResource = userRegisterResource;
             this.sensorsResource = sensorsResource;
             this.dataStorage = DataStorage;
             this.promiseChain = PromiseChain;
@@ -38,6 +40,8 @@
             var resource = this.resource;
             var sensorsResource = this.sensorsResource;
             var dataResource = this.dataResource;
+            var userRegisterResource = this.userRegisterResource;
+            var complexDataResource = this.complexDataResource;
             var dataStorage = this.dataStorage;
             var promiseChain = this.promiseChain;
             var loadingBar = this.loadingBar;
@@ -90,9 +94,9 @@
             $scope.getParams = function()
             {
                 var filter = {
-                    "limit": $scope.limit,
-                    order:    "date DESC",
-                    "where": {}
+                    limit: $scope.limit,
+                    order: "date DESC",
+                    where: {}
                 };
 
                 if($scope.search.nodeName != "") {
@@ -156,15 +160,15 @@
                     filter: ''
                 };
                 var filter = {
-                    limit:    $scope.limit, 
-                    skip:     skip, 
+                    limit:    $scope.limit,
+                    skip:     skip,
                     order:    "date DESC"
                 };
                 if( $scope.where !== null && $scope.where !== "" ) {
                     filter.where = $scope.where;
                 }
                 params.filter = JSON.stringify(filter);
-                
+
                 promiseChain.addPromise(
                     sensorsResource.findAll({ access_token: $scope.token }).$promise,
                     function(response){
@@ -187,8 +191,61 @@
                     // do some stuff after request
                 });
 
+            };
 
+            $scope.getComplexData = function (skip) {
+                loadingBar.start();
 
+                var params = {
+                    access_token: $scope.token,
+                    filter: ''
+                };
+                var filter = {
+                    limit:    $scope.limit,
+                    skip:     skip,
+                    order:    "date DESC"
+                };
+                if( $scope.where !== "" ) {
+                    filter.where = $scope.where;
+                }
+                params.filter = JSON.stringify(filter);
+
+                promiseChain.addPromise(
+                    sensorsResource.findAll({ access_token: $scope.token }).$promise,
+                    function(response){
+                        $scope.nodes = response;
+                    }
+                );
+
+                promiseChain.addPromise(
+                    complexDataResource.find(params).$promise,
+                    function(response){
+                        var user_id = dataStorage.getIdentity();
+                        $scope.complexData = response;
+                        angular.forEach($scope.complexData, function(value, key){
+                            $scope.complexData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
+                            $scope.complexData[key]['date'] = new Date(value['date']);
+                            $scope.complexData[key]['removeAllow'] = (user_id == value['userId'] ? true : false);
+                        });
+                    }
+                );
+                promiseChain.resolve(function(){
+                    loadingBar.complete();
+                    // do some stuff after request
+                });
+
+            };
+
+            $scope.removeComplexData = function(id) {
+                complexDataResource.remove({id: id}).$promise.then(
+                    function(response) {
+                        $scope.getData($scope.page);
+                        $scope.getComplexData($scope.page);
+                    },function(response) {
+                        notification.error(response);
+                    }
+
+                );
             };
 
             $scope.getSensors = function () {
@@ -196,7 +253,6 @@
                     access_token: $scope.token
                 }).$promise.then(
                     function(response){
-                        console.log( response );
                         return response;
                     }, function(response){
 
@@ -204,8 +260,6 @@
                 );
 
             };
-
-            $scope.getData($scope.page);
 
             $scope.nextResults = function()
             {
@@ -270,19 +324,32 @@
                 }
                 return "";
             };
+
             $scope.statDetails = function(hostId) {
-                console.log( hostId );
-                // FIXME: change after merge with route branch
-                window.location.href = "/measurement.html?hostId="+hostId;
-//                $location.path( "/measurement" );
+                $location.path( "/measurement/" + hostId ).replace();
             };
 
+            $scope.getData($scope.page);
+            $scope.getComplexData($scope.page);
+
+            $scope.logout = function() {
+                dataStorage.removeToken();
+            };
         }
 
     });
 
-    DashboardCtrl.$inject = ['$scope', '$interval', '$location', 'toastr', 'AuthResource', 'DataResource', 'SensorsResource', 'DataStorage', 'PromiseChain', 'cfpLoadingBar'];
+    DashboardCtrl.$inject = ['$scope', '$interval', '$location', 'toastr', 'AuthResource', 'DataResource', 'ComplexDataResource', 'UserRegisterResource', 'SensorsResource', 'DataStorage', 'PromiseChain', 'cfpLoadingBar'];
 
     angular.module('monitool.app.controllers')
-        .controller('DashboardCtrl', DashboardCtrl);
+        .controller('DashboardCtrl', DashboardCtrl)
+        .config(['$routeProvider', function($routeProvider) {
+            $routeProvider.when('/dashboard',{
+                templateUrl: '/assets/dist/views/dashboard/dashboard.html',
+                controller: 'DashboardCtrl',
+                access: {
+                    requiresLogin: true
+                }
+            });
+        }]);
 })();

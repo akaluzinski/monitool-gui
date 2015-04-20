@@ -1,0 +1,13 @@
+<h1>Monitool Access</h1>
+
+<form class="form-signin">
+    <h2 class="form-signin-heading">Sign up</h2>
+    <input type="email" id="email" ng-model="registerData.email" class="form-control" placeholder="Email address" required autofocus>
+    <input type="password" id="password" ng-model="registerData.password" class="form-control" placeholder="Password" required>
+    <input type="password" id="repassword" ng-model="registerData.repassword" class="form-control" placeholder="Retype password" required>
+    <button class="btn btn-lg btn-primary btn-block" ng-click="register()">Sign up</button>
+
+    <br/>
+    <a href="#" ng-click="goTo($event,'login')">Do you have an account? Sign in!</a>
+
+</form>

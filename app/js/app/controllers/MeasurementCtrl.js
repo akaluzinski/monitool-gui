@@ -42,7 +42,7 @@
         /**
          * {@inheritdoc}
          */
-        init: function($scope, $interval, $location, $routeParams, $timeout, toastr, authResource, dataResource, sensorsResource, DataStorage, PromiseChain, LoadingBar) {
+        init: function($scope, $interval, $location, $routeParams, $timeout, toastr, authResource, dataResource, sensorsResource, DataStorage, PromiseChain, LoadingBar, Location) {
             this.$scope = $scope;
             this.$interval = $interval;
             this.$location = $location;
@@ -55,6 +55,7 @@
             this.dataStorage = DataStorage;
             this.promiseChain = PromiseChain;
             this.loadingBar = LoadingBar;
+            this.location = Location;
 
             $('#chart-container').height(($(document).height() - $('#chart-container').offset().top) * 0.9);
             $('#chart-container').width(($(document).width() - $('#chart-container').offset().left) * 0.9);
@@ -78,6 +79,7 @@
             var dataStorage = this.dataStorage;
             var promiseChain = this.promiseChain;
             var loadingBar = this.loadingBar;
+            var location = this.location;
 
             $scope.refreshChartPromise = null;
             $scope.delay = 5000;
@@ -146,6 +148,7 @@
                 if( $scope.refreshChartPromise !== null ) {
                     $timeout.cancel($scope.refreshChartPromise);
                 }
+                location.skipReload().path( "/measurement/" + $scope.hostId ).replace();
                 $scope.sendRequest("date ASC");
             };
 
@@ -420,16 +423,19 @@
                 }
                 return "";
             };
+            
+            $scope.goBack = function(event) {
+                event.stopPropagation();
+                event.preventDefault();
+                $location.path( "/dashboard" ).replace();
+            };
 
             window.onresize = function(event) {
                 $('#chart-container').width(($(window).width() - $('#chart-container').offset().left) * 0.9);
                 $scope.preapareChart();
             };
             
-
-            // FIXME: change it after merge route branch to get params from $routeParams not $location
-//            $scope.hostId = $location.search().hostId;
-            $scope.hostId = '5516c893a7a2230300826ef8';
+            $scope.hostId = $routeParams.hostId;
             // get sensors information and data for table
             $scope.getSensors();
             // init start date input with three weeks ago date
@@ -444,8 +450,18 @@
 
     });
 
-    MeasurementCtrl.$inject = ['$scope', '$interval', '$location', '$routeParams', '$timeout', 'toastr', 'AuthResource', 'DataResource', 'SensorsResource', 'DataStorage', 'PromiseChain', 'cfpLoadingBar'];
+    MeasurementCtrl.$inject = ['$scope', '$interval', '$location', '$routeParams', '$timeout', 'toastr', 'AuthResource', 'DataResource', 'SensorsResource', 'DataStorage', 'PromiseChain', 'cfpLoadingBar', 'Location'];
 
     angular.module('monitool.app.controllers')
-        .controller('MeasurementCtrl', MeasurementCtrl);
+        .controller('MeasurementCtrl', MeasurementCtrl)
+        .config(['$routeProvider', function($routeProvider) {
+            $routeProvider.when('/measurement/:hostId',{
+                templateUrl: '/assets/dist/views/dashboard/measurement.html',
+                controller: 'MeasurementCtrl',
+                reloadOnSearch: false,
+                access: {
+                    requiresLogin: true
+                }
+            });
+        }]);
 })();

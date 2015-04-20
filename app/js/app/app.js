@@ -10,7 +10,6 @@
     angular.module('monitool.app.services', ['ngCookies']);
     angular.module('monitool.app.controllers', []);
     angular.module('monitool.app.configs', []);
-    //angular.module('monitool.app.routes', ['ngRoute']);
     angular.module('monitool.app.directives', []);
     angular.module('monitool.app', [
         'angular-loading-bar',
@@ -22,11 +21,10 @@
         'monitool.app.services',
         'monitool.app.directives',
         'monitool.app.configs',
-        //'monitool.app.routes',
         'monitool.app.controllers'
-    ]);
-
-
-
+    ])
+    .config(['$routeProvider', function($routeProvider) {
+        $routeProvider.otherwise('/dashboard');
+    }]);
 })();
 
