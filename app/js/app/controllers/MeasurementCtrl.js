@@ -427,6 +427,10 @@
             $scope.goBack = function(event) {
                 event.stopPropagation();
                 event.preventDefault();
+                if( $scope.refreshChartPromise !== null ) {
+                    $timeout.cancel($scope.refreshChartPromise);
+                }
+
                 $location.path( "/dashboard" ).replace();
             };
 
