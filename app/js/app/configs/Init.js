@@ -28,6 +28,7 @@
                             }
                         }
                     }
+                    cfpLoadingBar.complete();
                 });
             }
         ]);
