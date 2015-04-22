@@ -154,7 +154,6 @@
 
             $scope.getData = function (skip) {
                 loadingBar.start();
-
                 var params = {
                     access_token: $scope.token,
                     filter: ''
@@ -190,7 +189,6 @@
                     loadingBar.complete();
                     // do some stuff after request
                 });
-
             };
 
             $scope.getComplexData = function (skip) {
@@ -290,11 +288,11 @@
             };
 
             $scope.getSensorName = function(sensorId) {
-
                 if($scope.nodes == undefined) {
                     return 'MISSING_NODES';
                 }
-                var host = ($.grep($scope.nodes, function(e){ return parseInt(e.id) == parseInt(sensorId); }))[0];
+                
+                var host = ($.grep($scope.nodes, function(e){ return e.id === sensorId; }))[0];
                 if(host != undefined) {
                     return host.name;
                 }

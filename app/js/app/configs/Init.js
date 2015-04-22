@@ -3,8 +3,8 @@
 
     angular.module('monitool.app.configs')
         .run([
-            '$rootElement', 'Config', '$rootScope', '$location', 'AuthProvider',
-            function ($rootElement, Config, $rootScope, $location, AuthProvider) {
+            '$rootElement', 'Config', '$rootScope', '$location', 'cfpLoadingBar', 'AuthProvider',
+            function ($rootElement, Config, $rootScope, $location, cfpLoadingBar, AuthProvider) {
                 var config = {};
                 _.each($rootElement[0].attributes, function(attr) {
                     Config[attr.name.replace('data-', '')] = attr.value;
@@ -12,6 +12,7 @@
                 
                 $rootScope.$on('$routeChangeStart', function (event, next) {
                     var authorised;
+                    cfpLoadingBar.start();
                     if (next.access !== undefined) {
                         authorised = AuthProvider.isLoggedIn();
                         console.log(authorised);
