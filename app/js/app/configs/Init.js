@@ -15,7 +15,6 @@
                     cfpLoadingBar.start();
                     if (next.access !== undefined) {
                         authorised = AuthProvider.isLoggedIn();
-                        console.log(authorised);
                         var route = next.$$route.originalPath.replace('/','');
                         if (authorised) {
                             if( route === 'login' || route === 'register' ) {

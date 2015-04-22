@@ -11,13 +11,14 @@
         /**
          * {@inheritdoc}
          */
-        init: function($scope, toastr, $location, authProvider, UserRegisterResource, UserLoginResource) {
+        init: function($scope, toastr, $location, authProvider, UserRegisterResource, UserLoginResource, broadcastService) {
             this.$scope = $scope;
             this.$location = $location;
             this.notification = toastr;
             this.authProvider = authProvider;
             this.registerResource = UserRegisterResource;
             this.loginResource = UserLoginResource;
+            this.broadcastService = broadcastService;
 
             this._super($scope);
         },
@@ -32,6 +33,7 @@
             var registerResource = this.registerResource;
             var loginResource = this.loginResource;
             var authProvider = this.authProvider;
+            var broadcastService = this.broadcastService;
 
             $scope.loginData = {};
             $scope.registerData = {};
@@ -82,6 +84,7 @@
                     }
                 ).$promise.then(function(response){
                     authProvider.login(response.id, response.userId, $scope.loginData.email);
+                    broadcastService.broadcast('Logged', {email: $scope.loginData.email, token: response.id});
                     notification.success("Authorization success!");
                     $location.path('/dashboard').replace();
                 }, function(response){
@@ -93,7 +96,7 @@
         }
     });
 
-    LoginCtrl.$inject = ['$scope', 'toastr', '$location', 'AuthProvider', 'UserRegisterResource', 'UserLoginResource'];
+    LoginCtrl.$inject = ['$scope', 'toastr', '$location', 'AuthProvider', 'UserRegisterResource', 'UserLoginResource', 'BroadcastService'];
 
     angular.module('monitool.app.controllers')
         .controller('LoginCtrl', LoginCtrl)

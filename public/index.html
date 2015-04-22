@@ -34,7 +34,28 @@
 
 <body>
 
-<div class="container"  >
+<div class="container" ng-controller="IndexCtrl">
+    <div class="col-md-12" ng-if="isLogged == true">
+        <div class="well">
+            <div class="row">
+
+                <div class="col-md-10">
+                    <label ng-bind="storage.email"></label>
+
+                    <div style="font-size: 0.7em;">
+                        <label>Token:</label> <span ng-bind="storage.token"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-2" style="text-align: right;">
+                    <a class="btn btn-default" ng-click="logout()">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
     <div ng-view>
     </div>
 </div>

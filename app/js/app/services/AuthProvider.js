@@ -25,8 +25,6 @@
             },
 
             isLoggedIn: function() {
-                //return dataStorage.getToken() == true ? true : false;;
-                console.log(typeof dataStorage.getToken());
                 return typeof dataStorage.getToken() == "undefined" ? false : true;
             }
 

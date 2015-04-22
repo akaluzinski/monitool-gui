@@ -7,15 +7,19 @@
 
     var IndexCtrl = BaseController.extend({
         $scope: null,
+        authProvider: null,
+        dataStorage: null,
 
         /**
          * {@inheritdoc}
          */
-        init: function($scope, toastr, $location, authProvider) {
+        init: function($scope, toastr, $location, authProvider, dataStorage, broadcast) {
             this.$scope = $scope;
             this.$location = $location;
             this.notification = toastr;
             this.authProvider = authProvider;
+            this.dataStorage = dataStorage;
+            this.broadcast = broadcast;
 
             this._super($scope);
         },
@@ -27,6 +31,8 @@
             var $scope = this.$scope;
             var $location = this.$location;
             var authProvider = this.authProvider;
+            var dataStorage = this.dataStorage;
+            var broadcast = this.broadcast;
 
             $scope.goTo = function(event,route) {
                 event.stopPropagation();
@@ -40,16 +46,37 @@
                 }
             };
 
+            $scope.storage = $scope.storage || {};
+
+            $scope.logout = function() {
+                authProvider.logout();
+                $scope.isLogged = authProvider.isLoggedIn();
+                $scope.storage = {};
+                $location.path('/login').replace();
+            };
+
             //$scope.isLogged = authProvider.isLoggedIn() == true ? '1' : '0';
             $scope.isLogged = authProvider.isLoggedIn();
-            $scope.$watch(authProvider.isLoggedIn(), function() {
+
+            if($scope.isLogged) {
+                $scope.storage = {
+                    email: dataStorage.getEmail(),
+                    token: dataStorage.getToken()
+                };
+            }
+
+            $scope.$on('Logged', function(event, args){
                 $scope.isLogged = authProvider.isLoggedIn();
+                $scope.storage = {
+                    email: args.email,
+                    token: args.token
+                };
             });
 
         }
     });
 
-    IndexCtrl.$inject = ['$scope', 'toastr', '$location', 'AuthProvider'];
+    IndexCtrl.$inject = ['$scope', 'toastr', '$location', 'AuthProvider', 'DataStorage', 'BroadcastService'];
 
     angular.module('monitool.app.controllers')
         .controller('IndexCtrl', IndexCtrl);

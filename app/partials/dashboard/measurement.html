@@ -1,27 +1,19 @@
-<span class="pull-right"><a href="#" ng-click="goBack($event)">x</a></span>
-<div class="col-sm-12 col-md-7" style="margin-bottom: 20px;">
+
+<div class="col-sm-12 col-md-4" style="margin-bottom: 20px;">
     <div class="">
         <div id="measurement-table-wrapper" class="">
             <div class="table-wrapper table-responsive">
                 <table id="measurement-table" class="table table-striped" >
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th class="hidden">Host</th>
                             <th ng-repeat="name in sensorTypes">{{name | uppercase}}</th>
                             <th>Datetime</th>
-                            <th>Options</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="host in primaryData">
-                            <td ng-bind="host['sensorId']"></td>
-                            <td ng-bind="host['sensorName']" class="hidden"></td>
                             <td ng-repeat="name in sensorTypes">{{ host[name+'Load'] | number: 3 }}</td>
                             <td>{{host['date'] | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-                            <td>
-
-                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -45,10 +37,12 @@
         </div>
     </div>
 </div>
-<div class="col-sm-12 col-md-5 ">
+<div class="col-sm-12 col-md-8 ">
     <div id="searching-wrapper" class="">
         <div class="col-xs-12">
-            <h2 class="col-xs-12" style="margin-top:0">Details for host:</h2>
+            <h2 class="col-xs-12" style="margin-top:0">Host details
+                <span class="pull-right"><a class="btn btn-default btn-sm" href="#" ng-click="goBack($event)">x</a></span>
+            </h2>
             <span class="col-xs-12">
                 <select id="hostId" name="hostId" class="form-control" 
                         ng-model="hostId" ng-change="changeParam()" >
