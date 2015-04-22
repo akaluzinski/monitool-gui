@@ -35,7 +35,15 @@
 
 <body>
 
-<div class="container"  >
+<div class="row" ng-controller="IndexCtrl">
+    <div class="col-md-12">
+        <span class="login" ng-if="authProvider.isLoggedIn() == true">
+            <a ng-click="authProvider.logout()" href="#">Logout</a>
+        </span>
+    </div>
+</div>
+
+<div class="container">
     <div ng-view>
     </div>
 </div>

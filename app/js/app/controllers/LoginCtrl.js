@@ -11,11 +11,11 @@
         /**
          * {@inheritdoc}
          */
-        init: function($scope, toastr, $location, DataStorage, UserRegisterResource, UserLoginResource) {
+        init: function($scope, toastr, $location, authProvider, UserRegisterResource, UserLoginResource) {
             this.$scope = $scope;
             this.$location = $location;
             this.notification = toastr;
-            this.dataStorage = DataStorage;
+            this.authProvider = authProvider;
             this.registerResource = UserRegisterResource;
             this.loginResource = UserLoginResource;
 
@@ -31,7 +31,7 @@
             var notification = this.notification;
             var registerResource = this.registerResource;
             var loginResource = this.loginResource;
-            var dataStorage = this.dataStorage;
+            var authProvider = this.authProvider;
 
             $scope.loginData = {};
             $scope.registerData = {};
@@ -60,7 +60,7 @@
                         password: $scope.registerData.password
                     }
                 ).$promise.then(function(response){
-                    $scope.login = true;
+                    $location.path('/login').replace();
                     $scope.loginData = {};
                     notification.success("User has been created. You can log in now!");
                 }, function(response){
@@ -81,7 +81,8 @@
                         password: $scope.loginData.password
                     }
                 ).$promise.then(function(response){
-                    dataStorage.addToken(response.id);
+                    authProvider.login(response.id, response.userId, $scope.loginData.email);
+                    notification.success("Authorization success!");
                     $location.path('/dashboard').replace();
                 }, function(response){
                     notification.error(response.data.error.message);
@@ -92,7 +93,7 @@
         }
     });
 
-    LoginCtrl.$inject = ['$scope', 'toastr', '$location', 'DataStorage', 'UserRegisterResource', 'UserLoginResource'];
+    LoginCtrl.$inject = ['$scope', 'toastr', '$location', 'AuthProvider', 'UserRegisterResource', 'UserLoginResource'];
 
     angular.module('monitool.app.controllers')
         .controller('LoginCtrl', LoginCtrl)

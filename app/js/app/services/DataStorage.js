@@ -8,12 +8,12 @@
 
     function DataStorage($cookieStore, $timeout)
     {
+        //A8zwDvzcgeTOMrzh6AoAFAC9TFk40mmkmih2vVh6WQNUiXL7RgKA6ews3YTLwdNC
         var items = [];
         var cookiesProvider = $cookieStore;
         return {
 
             addToken: function(token) {
-                console.log(token);
                 cookiesProvider.put('token', token);
             },
 
@@ -24,14 +24,29 @@
             removeToken: function() {
                 return cookiesProvider.remove('token');
             },
-            
+
             addIdentity: function(identity) {
-                console.log(identity);
                 cookiesProvider.put('identity', identity);
             },
 
             getIdentity: function() {
                 return cookiesProvider.get('identity');
+            },
+
+            removeIdentity: function() {
+                return cookiesProvider.remove('identity');
+            },
+
+            addEmail: function(email) {
+                cookiesProvider.put('email', email);
+            },
+
+            getEmail: function() {
+                return cookiesProvider.get('email');
+            },
+
+            removeEmail: function() {
+                return cookiesProvider.remove('email');
             },
 
             getItems: function() {

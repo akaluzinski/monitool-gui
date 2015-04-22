@@ -13,7 +13,8 @@
                 $rootScope.$on('$routeChangeStart', function (event, next) {
                     var authorised;
                     if (next.access !== undefined) {
-                        authorised = AuthProvider.isLoggedIn(); 
+                        authorised = AuthProvider.isLoggedIn();
+                        console.log(authorised);
                         var route = next.$$route.originalPath.replace('/','');
                         if (authorised) {
                             if( route === 'login' || route === 'register' ) {

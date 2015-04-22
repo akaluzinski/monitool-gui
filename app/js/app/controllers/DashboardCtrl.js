@@ -22,7 +22,7 @@
             this.complexDataResource = complexDataResource;
             this.userRegisterResource = userRegisterResource;
             this.sensorsResource = sensorsResource;
-            this.dataStorage = DataStorage;
+            this.authProvider = DataStorage;
             this.promiseChain = PromiseChain;
             this.loadingBar = LoadingBar;
 
@@ -42,7 +42,7 @@
             var dataResource = this.dataResource;
             var userRegisterResource = this.userRegisterResource;
             var complexDataResource = this.complexDataResource;
-            var dataStorage = this.dataStorage;
+            var dataStorage = this.authProvider;
             var promiseChain = this.promiseChain;
             var loadingBar = this.loadingBar;
 
@@ -329,12 +329,13 @@
                 $location.path( "/measurement/" + hostId ).replace();
             };
 
+            $scope.complexStatDetails = function(hostId) {
+                $location.path( "/complex/" + hostId ).replace();
+            };
+
             $scope.getData($scope.page);
             $scope.getComplexData($scope.page);
 
-            $scope.logout = function() {
-                dataStorage.removeToken();
-            };
         }
 
     });

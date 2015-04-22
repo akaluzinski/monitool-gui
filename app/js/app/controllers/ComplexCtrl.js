@@ -1,6 +1,3 @@
-/**
- * @author Grzegorz Brdej
- */
 (function() {
     'use strict';
     
@@ -35,14 +32,14 @@
     };
 
     
-    var MeasurementCtrl = BaseController.extend({
+    var ComplexCtrl = BaseController.extend({
         $scope: null,
         $interval: null,
 
         /**
          * {@inheritdoc}
          */
-        init: function($scope, $interval, $location, $routeParams, $timeout, toastr, authResource, dataResource, sensorsResource, DataStorage, PromiseChain, LoadingBar, Location) {
+        init: function($scope, $interval, $location, $routeParams, $timeout, toastr, authResource, complexDataResource, sensorsResource, DataStorage, PromiseChain, LoadingBar, Location) {
             this.$scope = $scope;
             this.$interval = $interval;
             this.$location = $location;
@@ -50,7 +47,7 @@
             this.$timeout = $timeout;
             this.notification = toastr;
             this.resource = authResource;
-            this.dataResource = dataResource;
+            this.complexDataResource = complexDataResource;
             this.sensorsResource = sensorsResource;
             this.authProvider = DataStorage;
             this.promiseChain = PromiseChain;
@@ -75,7 +72,7 @@
             var notification = this.notification;
             var resource = this.resource;
             var sensorsResource = this.sensorsResource;
-            var dataResource = this.dataResource;
+            var complexDataResource = this.complexDataResource;
             var dataStorage = this.authProvider;
             var promiseChain = this.promiseChain;
             var loadingBar = this.loadingBar;
@@ -95,17 +92,22 @@
 
             $scope.where = null;
             
-            $scope.limit = 5;
+            $scope.limit = 10;
             $scope.page = 0;
             
             $scope.sensorTypes = ["cpu", "mem", "disc"];
             $scope.sensorTypesColor = ["#DF2F2F", "#AB2FDF", "#5A81E5", "#5AE5BB", "#7CE271"];
             $scope.hosts = [];
 
+            $scope.data = [];
+
             $scope.token = dataStorage.getToken() || null;
 
-            $scope.chartType = 1;
-            
+            $scope.chartType = 0;
+
+            console.log(dataStorage.getIdentity());
+            console.log(dataStorage.getToken());
+
             $scope.chartData = [];
             $scope.chartOptions = { 
                 grid: {
@@ -148,100 +150,11 @@
                 if( $scope.refreshChartPromise !== null ) {
                     $timeout.cancel($scope.refreshChartPromise);
                 }
-                location.skipReload().path( "/measurement/" + $scope.hostId ).replace();
+                location.skipReload().path( "/complex/" + $scope.hostId ).replace();
                 $scope.sendRequest("date ASC");
             };
 
 
-
-            $scope.sendRequest = function(order)
-            {
-                var results = [];
-                var limit = -1; // no limit for data from server
-                promiseChain.addPromise(
-                    dataResource.find($scope.getParams(order,limit)).$promise,
-                    function(response){
-                        angular.forEach(response, function(value, key){
-                            results[key] = {};
-                            results[key]['date'] = new Date(value['date']);
-                            response[key]['date'] = new Date(value['date']);
-                            for( var i in $scope.sensorTypes ) {
-                                var type = $scope.sensorTypes[i];
-                                results[key][type+'Load'] = value[type+'Load'];
-                            }
-                        });
-                        var objs = response.slice(-1*$scope.limit);
-                        $scope.primaryData = objs.sort(compareObj);
-                    }
-                );
-                promiseChain.resolve(function(){
-                    $scope.chartData = [];
-                    for( var i in $scope.sensorTypes ) {
-                        $scope.chartData[i] = {min:null,max:null,series:[]};
-                        $scope.chartData[i].series = {
-                            label: $scope.sensorTypes[i],
-                            color: $scope.sensorTypesColor[i],
-                            lines: { 
-                                show: true, 
-                                fill: false,
-                                lineWidth: 1
-                            },
-                            data: []
-                        };
-                    }
-                    var beforeTs = null;
-                    var periodTimeGap = 3600;
-                    angular.forEach(results, function(value, key) {
-                        var ts = new Date(value['date']).getTime();
-                        if( !beforeTs ) {
-                            beforeTs = ts;
-                        }
-
-                        for( var i in $scope.sensorTypes ) {
-                            var type = $scope.sensorTypes[i];
-                            var val = parseFloat(value[type+'Load']);
-                            
-                            if($scope.chartData[i].min === null || val < $scope.chartData[i].min) {
-                                $scope.chartData[i].min = val;
-                            }
-                            if($scope.chartData[i].max === null || val > $scope.chartData[i].max) {
-                                $scope.chartData[i].max = val;
-                            }
-
-                            if( ( ts-beforeTs ) > periodTimeGap ) {
-                                $scope.chartData[i].series.data.push([beforeTs, 0]);
-                                $scope.chartData[i].series.data.push([ts, 0]);
-                                if( $scope.chartData[i].min > 0 ) {
-                                    $scope.chartData[i].min = 0;
-                                }
-                            }
-                            $scope.chartData[i].series.data.push([ts, val]);
-                        }
-                        beforeTs = ts;
-                    });
-                    
-                    for( var i in $scope.sensorTypes ) {
-                        if($scope.chartData[i].min < 0 && $scope.chartData[i].max < 0) {
-                            $scope.chartData[i].min *= 1.3; 
-                            $scope.chartData[i].max *= 0.7;
-                        }
-                        if($scope.chartData[i].min > 0 && $scope.chartData[i].max > 0) {
-                            $scope.chartData[i].max *= 1.3;
-                            $scope.chartData[i].min *= 0.7;
-                        }
-                    }
-                    
-                    $scope.preapareChart();
-
-                    if( $scope.refreshChartPromise !== null ) {
-                        $timeout.cancel($scope.refreshChartPromise);
-                    }
-                    $scope.refreshChartPromise = $timeout(function() {
-                        $scope.sendRequest(order);
-                    },$scope.delay);
-                });
-
-            };
 
             $scope.preapareChart = function() {
                 $scope.chartOptions = plot.getOptions();            
@@ -263,60 +176,8 @@
                     $('#chart-message').show();
                 }
             };
-            
-            $scope.getParams = function(order,limit)
-            {
-                if( typeof order === "undefined" ) {
-                    order = "date DESC";
-                }
-                var filter = {
-                    "order": order,
-                    "where": {}
-                };
-                if( typeof limit === "undefined" ) {
-                    filter.limit = $scope.limit;
-                } else if( limit > 0 ) {
-                    filter.limit = limit;
-                }
-                
-                filter.where.sensorId = $scope.hostId;
 
-                var startDate = null, endDate = null;
-                if($scope.search.startDate != "") {
-                    startDate = { 'gt': new Date($scope.search.startDate) };
-                }
-                
-                if(!$scope.search.todayDate && $scope.search.endDate != "" && !$scope.search.todayDate) {
-                    endDate = { 'lt': new Date($scope.search.endDate) };
-                } else {
-                    endDate = { 'lt': new Date() };
-                }
-                
-                if( startDate !== null && endDate !== null ) {
-                    delete filter.where.date;
-                    filter.where.and = [];
-                    filter.where.and.push({'date':startDate});
-                    filter.where.and.push({'date':endDate});
-                } else if( startDate !== null ) {
-                    delete filter.where.and;
-                    filter.where.date = startDate;
-                } else if( endDate !== null ) {
-                    delete filter.where.and;
-                    filter.where.date = endDate;
-                }
-
-                var params = {
-                    access_token: $scope.token
-                };
-                params.filter = angular.fromJson(filter);
-
-                $scope.where = filter.where;
-                
-                return params;
-            };
-
-
-            $scope.getData = function (skip) {
+            $scope.getData = function () {
                 loadingBar.start();
                 
                 var params = {
@@ -324,17 +185,15 @@
                     filter: ''
                 };
                 var filter = {
-                    limit:    $scope.limit, 
-                    skip:     skip, 
                     order:    "date DESC"
                 };
                 
                 if( $scope.where !== null && $scope.where !== "" ) {
-                    $scope.where.sensorId = $scope.hostId;
+                    $scope.where.id = $scope.hostId;
                     filter.where = $scope.where;
                 } else {
                     filter.where = {};
-                    filter.where.sensorId = $scope.hostId;
+                    filter.where.id = $scope.hostId;
                 }
                 params.filter = JSON.stringify(filter);
                 
@@ -346,12 +205,18 @@
                 );
 
                 promiseChain.addPromise(
-                    dataResource.find(params).$promise,
+                    complexDataResource.find(params).$promise,
                     function(response){
-                        $scope.primaryData = response;
-                        angular.forEach($scope.primaryData, function(value, key){
-                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
-                            $scope.primaryData[key]['date'] = new Date(value['date']);
+                        $scope.complexData = [];
+                        $scope.data = response[0];
+                        angular.forEach($scope.data['data'], function(value, key){
+                            $scope.data['data'][key]['date'] = new Date(value['date']);
+                        });
+                        $scope.parseData($scope.page, $scope.limit)
+                        angular.forEach($scope.sensorTypes, function(value, key){
+                            if($scope.data['itemType'].indexOf(value) >= 0) {
+                                $scope.chartType = key;
+                            }
                         });
                     }
                 );
@@ -378,20 +243,27 @@
 
             };
 
-            $scope.nextResults = function()
-            {
+            $scope.nextResults = function() {
                 $scope.page += 1;
-                $scope.getData($scope.page*$scope.limit);
             };
 
-            $scope.prevResults = function()
-            {
+            $scope.prevResults = function() {
                 $scope.page -= 1;
-                if($scope.page >= 0) {
-                    $scope.getData($scope.page*$scope.limit);
-                }
             };
-            
+
+            $scope.parseData = function(page, limit) {
+                $scope.complexData = _.slice($scope.data['data'], page*limit, (page+1)*limit);
+            }
+
+            $scope.$watch('limit', function() {
+                $scope.parseData($scope.page, $scope.limit)
+            });
+
+            $scope.$watch('page', function() {
+                if ($scope.page > 0) {
+                    $scope.parseData($scope.page, $scope.limit)
+                }
+            });
 
             $scope.getSensorName = function(sensorId) {
 
@@ -445,19 +317,19 @@
             // init flot chart
             plot = $.plot($('#chart'), [[]], $scope.chartOptions);
             // get data fot flot chart
-            $scope.sendRequest("date ASC");
+            $scope.getData();
         }
 
     });
 
-    MeasurementCtrl.$inject = ['$scope', '$interval', '$location', '$routeParams', '$timeout', 'toastr', 'AuthResource', 'DataResource', 'SensorsResource', 'DataStorage', 'PromiseChain', 'cfpLoadingBar', 'Location'];
+    ComplexCtrl.$inject = ['$scope', '$interval', '$location', '$routeParams', '$timeout', 'toastr', 'AuthResource', 'ComplexDataResource', 'SensorsResource', 'DataStorage', 'PromiseChain', 'cfpLoadingBar', 'Location'];
 
     angular.module('monitool.app.controllers')
-        .controller('MeasurementCtrl', MeasurementCtrl)
+        .controller('ComplexCtrl', ComplexCtrl)
         .config(['$routeProvider', function($routeProvider) {
-            $routeProvider.when('/measurement/:hostId',{
-                templateUrl: '/assets/dist/views/dashboard/measurement.html',
-                controller: 'MeasurementCtrl',
+            $routeProvider.when('/complex/:hostId',{
+                templateUrl: '/assets/dist/views/dashboard/complex.html',
+                controller: 'ComplexCtrl',
                 reloadOnSearch: false,
                 access: {
                     requiresLogin: true
