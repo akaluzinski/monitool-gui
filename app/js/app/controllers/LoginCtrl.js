@@ -11,13 +11,14 @@
         /**
          * {@inheritdoc}
          */
-        init: function($scope, toastr, $location, DataStorage, UserRegisterResource, UserLoginResource) {
+        init: function($scope, toastr, $location, authProvider, UserRegisterResource, UserLoginResource, broadcastService) {
             this.$scope = $scope;
             this.$location = $location;
             this.notification = toastr;
-            this.dataStorage = DataStorage;
+            this.authProvider = authProvider;
             this.registerResource = UserRegisterResource;
             this.loginResource = UserLoginResource;
+            this.broadcastService = broadcastService;
 
             this._super($scope);
         },
@@ -31,51 +32,89 @@
             var notification = this.notification;
             var registerResource = this.registerResource;
             var loginResource = this.loginResource;
-            var dataStorage = this.dataStorage;
+            var authProvider = this.authProvider;
+            var broadcastService = this.broadcastService;
 
             $scope.loginData = {};
             $scope.registerData = {};
 
-            $scope.login = true;
-
-            $scope.showLoginForm = function() {
-                $scope.login = true;
+            $scope.goTo = function(event,route) {
+                event.stopPropagation();
+                event.preventDefault();
+                if( route === 'register' ) {
+                    $location.path('/register').replace();
+                } else if( route === 'login' ) {
+                    $location.path('/login').replace();
+                } else if( route === 'dashboard' ) {
+                    $location.path('/dashboard').replace();
+                }
             };
-
-            $scope.showRegisterForm = function() {
-                $scope.login = false;
-            };
-
+            
             $scope.register = function() {
-                registerResource.create({email: $scope.registerData.email, password: $scope.registerData.password }).$promise.then(function(response){
-                    notification.info("User has been created. You can log in now!");
-                    $scope.login = true;
+                if($scope.registerData.password != $scope.registerData.repassword) {
+                    notification.error("Given passwords are not identical!");
+                    return false;
+                }
+
+                registerResource.create(
+                    {
+                        email: $scope.registerData.email,
+                        password: $scope.registerData.password
+                    }
+                ).$promise.then(function(response){
+                    $location.path('/login').replace();
                     $scope.loginData = {};
+                    notification.success("User has been created. You can log in now!");
                 }, function(response){
-                    notification.info('Error');
+                    notification.error(response.data.error.message);
                 });
 
             };
 
             $scope.login = function() {
-                loginResource.login({email: $scope.loginData.email, password: $scope.loginData.password }).$promise.then(function(response){
-                    dataStorage.addToken(response.id);
+                if($scope.loginData.password == "") {
+                    notification.error("Password cannot be empty");
+                    return false;
+                }
 
-                    /**
-                     * @TODO move to dashboard
-                     */
-
+                loginResource.login(
+                    {
+                        email: $scope.loginData.email,
+                        password: $scope.loginData.password
+                    }
+                ).$promise.then(function(response){
+                    authProvider.login(response.id, response.userId, $scope.loginData.email);
+                    broadcastService.broadcast('Logged', {email: $scope.loginData.email, token: response.id});
+                    notification.success("Authorization success!");
+                    $location.path('/dashboard').replace();
                 }, function(response){
-                    notification.info('Error');
+                    notification.error(response.data.error.message);
                 });
             };
 
-
+            
         }
     });
 
-    LoginCtrl.$inject = ['$scope', 'toastr', '$location', 'DataStorage', 'UserRegisterResource', 'UserLoginResource'];
+    LoginCtrl.$inject = ['$scope', 'toastr', '$location', 'AuthProvider', 'UserRegisterResource', 'UserLoginResource', 'BroadcastService'];
 
     angular.module('monitool.app.controllers')
-        .controller('LoginCtrl', LoginCtrl);
+        .controller('LoginCtrl', LoginCtrl)
+        .config(['$routeProvider', function($routeProvider) {
+            $routeProvider.
+                when('/login',{
+                    templateUrl: '/assets/dist/views/auth/login.html',
+                    controller: 'LoginCtrl',
+                    access: {
+                        requiresLogin: false
+                    }
+                }).
+                when('/register',{
+                    templateUrl: '/assets/dist/views/auth/register.html',
+                    controller: 'LoginCtrl',
+                    access: {
+                        requiresLogin: false
+                    }
+                });
+        }]);
 })();
