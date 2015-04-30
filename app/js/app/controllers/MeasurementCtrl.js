@@ -152,8 +152,6 @@
                 $scope.sendRequest("date ASC");
             };
 
-
-
             $scope.sendRequest = function(order)
             {
                 var results = [];

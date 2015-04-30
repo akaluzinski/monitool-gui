@@ -55,8 +55,8 @@
                 <table id="complexStats" class="table" >
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Type</th>
+                            <th>Stat name</th>
+                            <th>Hostname</th>
                             <th>Period</th>
                             <th>Interval</th>
                             <th>Options</th>
@@ -64,16 +64,16 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="host in complexData" >
+                            <td>{{ host['name'] }}</td>
                             <td>{{ host['sensorName'] }}</td>
-                            <td>{{ host['itemType'] }}</td>
                             <td>{{ host['period']/1000 }}s</td>
                             <td>{{ host['repeat']/1000 }}s</td>
                             <td>
-                                <button ng-click="complexStatDetails(host['id'])">
+                                <button ng-click="complexStatDetails(host['name'], host['hostId'])">
                                     <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
                                 </button>
 
-                                <button ng-show="host['removeAllow']" ng-click="removeComplexData(host['id'])">
+                                <button ng-show="host['removeAllow']" ng-click="removeComplex(host['hostId'], host['id'])">
                                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                                 </button>
                             </td>
@@ -141,7 +141,32 @@
 
         </div>
         <div id="createComplexStat-wrapper" class="tab-pane">
+            <h2>Create complex stat</h2>
+            <br/>
+            <div class="">
+                <div class="col-sm-5">
+                    <select id="hostId" name="hostId" class="form-control col-xs-12 col-sm-5" ng-model="complexStat.hostId" >
+                        <option value="">Select node</option>
+                        <option ng-repeat="host in nodes | unique:'id'" value="{{ host['id'] }}">{{ host['name'] }}</option>
+                    </select>
+                </div>
+                <div class="col-sm-5">
+                    <input type="text" name="statName" class="form-control" ng-model="complexStat.name"/>
+                </div>
+                <div class="col-sm-5">
+                    <label>Period [ms]</label>
+                    <input type="numeric" name="period" class="form-control" ng-model="complexStat.period"/>
+                </div>
 
+                <div class="col-sm-5">
+                    <label>Interval [ms]</label>
+                    <input type="numeric" name="interval" class="form-control" ng-model="complexStat.interval"/>
+                </div>
+                <div class="col-sm-12">
+                    <button class="btn btn-info" ng-click="createComplex()">Search</button>
+                </div>
+
+            </div>
         </div>
     </div>
 

@@ -6,13 +6,17 @@
                 <table id="measurement-table" class="table" >
                     <thead>
                         <tr>
-                            <th>Value</th>
+                            <th>Cpu</th>
+                            <th>Mem</th>
+                            <th>Disc</th>
                             <th>Datetime</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="host in complexData">
-                            <td ng-bind="host['avg']"></td>
+                            <td ng-bind="host['cpuLoad']"></td>
+                            <td ng-bind="host['memLoad']"></td>
+                            <td ng-bind="host['discLoad']"></td>
                             <td>{{host['date'] | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                         </tr>
                     </tbody>
@@ -43,38 +47,37 @@
             <h2 class="col-xs-12" style="margin-top:0">Complex stat details</h2>
 
             <div class="form-group">
-                <label>Type</label>
-                <span ng-bind="data['itemType']"></span>
-            </div>
-
-            <div class="form-group">
                 <label>Period</label>
-                <span>{{ data['period']/1000 }} s</span>
+                <span>{{ complexStat['period']/1000 }} s</span>
             </div>
 
             <div class="form-group">
                 <label>Repeat</label>
-                <span>{{ data['repeat']/1000 }} s</span>
+                <span>{{ complexStat['repeat']/1000 }} s</span>
             </div>
 
         </div>
     </div>
     <div id="charts-wrapper" class="col-xs-12" style="margin-top:20px;">
-        <h3>Chart</h3>
+        <ul class="btn-group">
+            <li class="btn btn-default" ng-repeat="type in sensorTypes" ng-class="{'active':$index === chartType}">
+                <a id="{{type}}-chart-wrapper-btn" ng-click="changeChart($index);">{{type|uppercase}}</a>
+            </li>
+        </ul>
         <br/>
         <div class="col-xs-12">
             <div id="chart-container">
                 <div class="loading"></div>
-                <div id="chart" 
+                <div id="chart"
                      style="width:100%;height:300px;"
-                     data-type="{{ sensorTypes[chartType] }}" 
-                     data-value-min="{{ 0 }}" 
+                     data-type="{{ sensorTypes[chartType] }}"
+                     data-value-min="{{ 0 }}"
                      data-value-max="{{ 1 }}"
                      hidden="hidden">
-                </div>   
+                </div>
                 <div id="chart-message" class="alert alert-info alert-dismissable hidden">
                     <i class="fa fa-info"></i> 'No data'
-                </div>        
+                </div>
             </div>
         </div>
     </div>

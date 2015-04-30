@@ -24,6 +24,14 @@
                     method: 'GET',
                     isArray: true
                 },
+                findById: {
+                    url: 'http://monitool.herokuapp.com:80/api/complexStat/:id',
+                    params: {
+                        id: '@id'
+                    },
+                    method: 'GET',
+                    isArray: false
+                },
                 remove: {
                     method: 'DELETE',
                     isArray: true

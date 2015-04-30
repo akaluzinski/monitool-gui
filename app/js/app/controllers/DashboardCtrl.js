@@ -66,6 +66,8 @@
             $scope.complexPage = 0;
             $scope.complexLimit = 5;
 
+            $scope.complexStat = {};
+
             $scope.sensorTypes = ["cpu", "mem", "disc"];
             $scope.hosts = [];
 
@@ -178,6 +180,7 @@
                 promiseChain.addPromise(
                     dataResource.find(params).$promise,
                     function(response){
+                        console.log(response);
                         $scope.primaryData = response;
                         angular.forEach($scope.primaryData, function(value, key){
                             $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['hostId']);
@@ -221,7 +224,7 @@
                         var user_id = dataStorage.getIdentity();
                         $scope.complexData = response;
                         angular.forEach($scope.complexData, function(value, key){
-                            $scope.complexData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
+                            $scope.complexData[key]['sensorName'] = $scope.getSensorName(value['hostId']);
                             $scope.complexData[key]['date'] = new Date(value['date']);
                             $scope.complexData[key]['removeAllow'] = (user_id == value['userId'] ? true : false);
                         });
@@ -232,18 +235,6 @@
                     // do some stuff after request
                 });
 
-            };
-
-            $scope.removeComplexData = function(id) {
-                complexDataResource.remove({id: id}).$promise.then(
-                    function(response) {
-                        $scope.getData($scope.page);
-                        $scope.getComplexData($scope.page);
-                    },function(response) {
-                        notification.error(response);
-                    }
-
-                );
             };
 
             $scope.getSensors = function () {
@@ -327,12 +318,49 @@
                 $location.path( "/measurement/" + hostId ).replace();
             };
 
-            $scope.complexStatDetails = function(hostId) {
-                $location.path( "/complex/" + hostId ).replace();
+            $scope.complexStatDetails = function(hostName, hostId) {
+                $location.path( "/complex/" + hostName + "/" + hostId ).replace();
             };
 
             $scope.getData($scope.page);
             $scope.getComplexData($scope.page);
+
+            $scope.createComplex = function()
+            {
+                sensorsResource.createComplex({
+                    instance: {
+                        period: $scope.complexStat.period,
+                        repeat: $scope.complexStat.interval,
+                        name: $scope.complexStat.name
+                    },
+                    hostId: $scope.complexStat.hostId,
+                    access_token: $scope.token
+                }).$promise.then(
+                    function(response) {
+                        $scope.getData($scope.page);
+                        $scope.getComplexData($scope.page);
+                    },function(response) {
+                        notification.error(response);
+                    }
+
+                );
+            };
+
+            $scope.removeComplex = function(hostId, id) {
+                sensorsResource.removeComplex({
+                    hostId: hostId,
+                    statId: id,
+                    access_token: $scope.token
+                }).$promise.then(
+                    function(response) {
+                        $scope.getData($scope.page);
+                        $scope.getComplexData($scope.page);
+                    },function(response) {
+                        notification.error(response);
+                    }
+
+                );
+            };
 
         }
 
