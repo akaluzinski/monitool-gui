@@ -45,7 +45,7 @@
             <br/>
             <div id="primaryStats-wrapper" class="active tab-pane">
                 <div class="table-wrapper primaryStats-wrapper table-responsive">
-                    <table id="primaryStats" class="table table-striped" >
+                    <table id="primaryStats" class="table" >
                         <thead>
                             <tr>
                                 <th class="hidden">ID</th>
@@ -57,12 +57,12 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="host in primaryData">
-                                <td ng-bind="host['sensorId']" class="hidden"></td>
+                                <td ng-bind="host['hostId']" class="hidden"></td>
                                 <td ng-bind="host['sensorName']"></td>
                                 <td ng-repeat="name in sensorTypes">{{ host[name+'Load'] | number: 3 }}</td>
                                 <td>{{host['date'] | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                                 <td>
-                                    <button ng-click="statDetails(host['sensorId'])">
+                                    <button ng-click="statDetails(host['hostId'])">
                                         <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
                                     </button>
                                 </td>
@@ -89,7 +89,7 @@
             </div>
             <div id="complexStats-wrapper" class="tab-pane">
                 <div class="table-wrapper complexStats-wrapper table-responsive">
-                    <table id="complexStats" class="table table-striped" >
+                    <table id="complexStats" class="table" >
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -106,7 +106,7 @@
                                 <td>{{ host['period']/1000 }}s</td>
                                 <td>{{ host['repeat']/1000 }}s</td>
                                 <td>
-                                    <button ng-click="complexStatDetails(host['sensorId'])">
+                                    <button ng-click="complexStatDetails(host['hostId'])">
                                         <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
                                     </button>
 

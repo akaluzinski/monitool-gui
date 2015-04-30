@@ -1,13 +1,24 @@
-<h1>Monitool Access</h1>
-
-<form class="form-signin">
-    <h2 class="form-signin-heading">Sign up</h2>
-    <input type="email" id="email" ng-model="registerData.email" class="form-control" placeholder="Email address" required autofocus>
-    <input type="password" id="password" ng-model="registerData.password" class="form-control" placeholder="Password" required>
-    <input type="password" id="repassword" ng-model="registerData.repassword" class="form-control" placeholder="Retype password" required>
-    <button class="btn btn-lg btn-primary btn-block" ng-click="register()">Sign up</button>
-
-    <br/>
-    <a href="#" ng-click="goTo($event,'login')">Do you have an account? Sign in!</a>
-
-</form>
+<div class="grad"></div>
+<div class="row" style="margin-top: 30%;">
+    <div class="col-sm-6 header">
+        <div>Monitool<span>Access</span></div>
+    </div>
+    <div class="col-sm-6 login">
+        <div class="col-sm-7">
+            <input type="email" placeholder="Email address" ng-model="registerData.email" required autofocus><br>
+            <input type="password" placeholder="Password" ng-model="registerData.password" required><br>
+            <input type="password" placeholder="Retype Password" ng-model="registerData.repassword" required><br>
+            <input type="button" ng-click="register()" value="Sign up">
+        </div>
+        <div class="col-sm-7" style="margin-top: 90px;">
+            <div class="row">
+                <div class="col-md-8">
+                    <p style="font-size: 1.2em; font-family: 'Exo', Arial;">Already have an account?</p>
+                </div>
+                <div class="col-md-4" style="margin-top: -18px;">
+                    <input type="button" ng-click="goTo($event,'login')" value="Sign in!">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

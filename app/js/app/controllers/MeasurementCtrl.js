@@ -279,7 +279,7 @@
                     filter.limit = limit;
                 }
                 
-                filter.where.sensorId = $scope.hostId;
+                filter.where.hostId = $scope.hostId;
 
                 var startDate = null, endDate = null;
                 if($scope.search.startDate != "") {
@@ -330,11 +330,11 @@
                 };
                 
                 if( $scope.where !== null && $scope.where !== "" ) {
-                    $scope.where.sensorId = $scope.hostId;
+                    $scope.where.hostd = $scope.hostId;
                     filter.where = $scope.where;
                 } else {
                     filter.where = {};
-                    filter.where.sensorId = $scope.hostId;
+                    filter.where.hostId = $scope.hostId;
                 }
                 params.filter = JSON.stringify(filter);
                 
@@ -350,7 +350,7 @@
                     function(response){
                         $scope.primaryData = response;
                         angular.forEach($scope.primaryData, function(value, key){
-                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
+                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['hostId']);
                             $scope.primaryData[key]['date'] = new Date(value['date']);
                         });
                     }
@@ -393,19 +393,19 @@
             };
             
 
-            $scope.getSensorName = function(sensorId) {
+            $scope.getSensorName = function(hostId) {
 
                 if($scope.nodes == undefined) {
                     return 'MISSING_NODES';
                 }
-                var host = ($.grep($scope.nodes, function(e){ return e.id == sensorId; }))[0];
+                var host = ($.grep($scope.nodes, function(e){ return e.id == hostId; }))[0];
                 if(host != undefined) {
                     return host.name;
                 }
                 return 'MISSING_HOST';
             };
 
-            $scope.getSensorId = function(hostName, first) {
+            $scope.gethostId = function(hostName, first) {
                 var hosts = ($.grep($scope.nodes, function(e){ return e.name.toLowerCase().indexOf( hostName.toLowerCase() ) !== -1; }));
                 if( typeof first !== "undefined" ) {
                     var ids = [];

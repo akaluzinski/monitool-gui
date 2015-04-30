@@ -79,7 +79,7 @@
                         $scope.page = 0;
                         $scope.primaryData = response;
                         angular.forEach($scope.primaryData, function(value, key){
-                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
+                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['hostId']);
                             $scope.primaryData[key]['date'] = new Date(value['date']);
                         });
                     }
@@ -180,7 +180,7 @@
                     function(response){
                         $scope.primaryData = response;
                         angular.forEach($scope.primaryData, function(value, key){
-                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
+                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['hostId']);
                             $scope.primaryData[key]['date'] = new Date(value['date']);
                         });
                     }

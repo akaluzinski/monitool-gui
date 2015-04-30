@@ -8,7 +8,7 @@
 
     function SensorsResource($resource, relativeUrl) {
         return $resource(
-            relativeUrl.get('http://monitool.herokuapp.com:80/api/sensors'),
+            relativeUrl.get('http://monitool.herokuapp.com:80/api/hosts'),
             {
                 access_token: '@access_token'
             },
