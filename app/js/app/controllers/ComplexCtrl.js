@@ -55,9 +55,6 @@
             this.loadingBar = LoadingBar;
             this.location = Location;
 
-            $('#chart-container').height(($(document).height() - $('#chart-container').offset().top) * 0.9);
-            $('#chart-container').width(($(document).width() - $('#chart-container').offset().left) * 0.9);
-
             this._super($scope);
         },
 
@@ -245,7 +242,7 @@
                             $scope.chartData[i].min *= 0.7;
                         }
                     }
-
+                    $scope.changeChart($scope.chartType);
                     $scope.preapareChart();
 
                     if( $scope.refreshChartPromise !== null ) {
@@ -463,7 +460,6 @@
             };
 
             window.onresize = function(event) {
-                $('#chart-container').width(($(window).width() - $('#chart-container').offset().left) * 0.9);
                 $scope.preapareChart();
             };
             

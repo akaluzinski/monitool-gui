@@ -57,7 +57,7 @@
             $scope.searchNode = '';
             $scope.searchId = '!!';
 
-            $scope.activeTable = 0;
+            $scope.activeTable = 'primary';
             
             $scope.where = null;
             
@@ -72,6 +72,26 @@
             $scope.hosts = [];
 
             $scope.token = dataStorage.getToken() || null;
+
+
+            $scope.sendComplexRequest = function()
+            {
+                var whereFilter = {};
+                if($scope.search.statName != "") {
+                    whereFilter = {
+                        name : {
+                            like: $scope.search.statName
+                        }
+                    };
+                }
+
+                if($scope.search.hostId != "" && $scope.search.hostId != undefined) {
+                    whereFilter.hostId = $scope.search.hostId;
+                }
+
+                $scope.where = whereFilter;
+                $scope.getComplexData($scope.complexPage*$scope.complexLimit)
+            };
 
             $scope.sendRequest = function()
             {
@@ -104,19 +124,19 @@
                 if($scope.search.nodeName != "") {
                     var sensorsId = $scope.getSensorId($scope.search.nodeName, false);
                     if( sensorsId.length > 1 ) {
-                        delete filter.where.sensorId;
+                        delete filter.where.hostId;
                         filter.where.or = [];
                         for( var i in sensorsId ) {
-                            filter.where.or.push({'sensorId':sensorsId[i]});
+                            filter.where.or.push({'hostId':sensorsId[i]});
                         }
                     } else {
                         delete filter.where.or;
-                        filter.where.sensorId = sensorsId[0];
+                        filter.where.hostId = sensorsId[0];
                     }
                 }
 
                 if($scope.search.node != "") {
-                    filter.where.sensorId = $scope.search.node;
+                    filter.where.hostId = $scope.search.node;
                 }
 
                 var startDate = null, endDate = null;
@@ -339,6 +359,9 @@
                     function(response) {
                         $scope.getData($scope.page);
                         $scope.getComplexData($scope.page);
+
+                        notification.success("Complex stats entry has been created");
+
                     },function(response) {
                         notification.error(response);
                     }
@@ -355,6 +378,7 @@
                     function(response) {
                         $scope.getData($scope.page);
                         $scope.getComplexData($scope.page);
+                        notification.success("Complex stats entry has been removed");
                     },function(response) {
                         notification.error(response);
                     }

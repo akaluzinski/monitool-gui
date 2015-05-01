@@ -128,3 +128,76 @@ body .container {
         -webkit-overflow-scrolling: touch;
     }
 }
+
+.user-box {
+    padding-top: 27px;
+}
+.user-box .email {
+    float: left;
+}
+.user-box .email > label {
+    font-size: 1.5em;
+    font-weight: normal;
+    font-family: 'Exo', Arial;
+    margin-left: 20px;
+    margin-top: 10px;
+}
+.user-box .email .icon {
+    background: #fff;
+    float: left;
+    border-radius: 45px;
+}
+
+.user-box div.token {
+    font-size: 0.7em;
+    float: left;
+    margin-left: 20px;
+}
+.user-box .btn-group.logout {
+    margin-right: 30px;
+    margin-top: -20px;
+    margin-bottom: 20px;
+}
+
+.submenuType .btn, .statTypeMenu .btn {
+    border-radius: 4px!important;
+    margin: 0px 5px;
+}
+
+.btn-info {
+    background-color: #5379fa;
+    border-color: #4A6CE0;
+}
+.btn-info:hover {
+    background-color: #4872fa;
+    border-color: #476efa;
+}
+.btn-info[disabled] {
+    background-color: #5379fa;
+    border-color: #4A6CE0;
+}
+.searchButton button {
+    padding: 10px 30px;
+}
+
+.bootstrap-datetimepicker-widget ul {
+    color: #000!important;
+    text-align: center!important;
+}
+.datapicker-months .month {
+    padding: 3px;
+}
+.btn.active {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+.btn a {
+    color: #2a2a2a;
+}
+.dateDisabled {
+    pointer-events: none;
+    opacity: 0.5;
+    background: #CCC;
+    border-radius: 4px;
+}

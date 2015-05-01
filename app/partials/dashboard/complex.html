@@ -1,4 +1,3 @@
-<span class="pull-right"><a href="#" ng-click="goBack($event)">x</a></span>
 <div class="col-sm-12 col-md-5" style="margin-bottom: 20px;">
     <div class="">
         <div id="measurement-table-wrapper" class="">
@@ -44,29 +43,38 @@
 <div class="col-sm-12 col-md-7 ">
     <div id="searching-wrapper" class="">
         <div class="col-xs-12">
-            <h2 class="col-xs-12" style="margin-top:0">Complex stat details</h2>
+            <h2 class="col-xs-12" style="margin-top:0">Complex stat details
+                <span class="pull-right"><a class="btn btn-default btn-sm" href="#" ng-click="goBack($event)">x</a></span>
+            </h2>
 
-            <div class="form-group">
-                <label>Period</label>
-                <span>{{ complexStat['period']/1000 }} s</span>
-            </div>
+            <div style="margin-left: 30px; font-size: 1.1em;">
+                <div class="form-group">
+                    <label>Name</label>
+                    <span>{{ complexStat['name'] }}</span>
+                </div>
 
-            <div class="form-group">
-                <label>Repeat</label>
-                <span>{{ complexStat['repeat']/1000 }} s</span>
+                <div class="form-group">
+                    <label>Period</label>
+                    <span>{{ complexStat['period']/1000 }} s</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Repeat</label>
+                    <span>{{ complexStat['repeat']/1000 }} s</span>
+                </div>
             </div>
 
         </div>
     </div>
     <div id="charts-wrapper" class="col-xs-12" style="margin-top:20px;">
-        <ul class="btn-group">
+        <ul class="btn-group pull-right" style="margin-right: 20px;">
             <li class="btn btn-default" ng-repeat="type in sensorTypes" ng-class="{'active':$index === chartType}">
                 <a id="{{type}}-chart-wrapper-btn" ng-click="changeChart($index);">{{type|uppercase}}</a>
             </li>
         </ul>
         <br/>
         <div class="col-xs-12">
-            <div id="chart-container">
+            <div id="chart-container" style="background-color: #fff; padding: 10px;">
                 <div class="loading"></div>
                 <div id="chart"
                      style="width:100%;height:300px;"

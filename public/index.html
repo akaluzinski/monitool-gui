@@ -13,9 +13,8 @@
     <!-- Bootstrap core CSS -->
     <link href="/assets/dist/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/dist/lib/angular-loading-bar/loading-bar.css" rel="stylesheet">
-    <link href="/assets/dist/lib/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker.min.css" />
-    <link href="/assets/dist/lib/datatables/jquery.dataTables.css">
-    
+    <link href="/assets/dist/lib/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker.min.css" rel="stylesheet">
+
     <!-- Custom styles for this template -->
     <link href="/assets/dist/themes/css/custom.css" rel="stylesheet">
     <link href="/assets/dist/lib/angular-toastr/angular-toastr.css" rel="stylesheet">
@@ -42,14 +41,20 @@
                 <div>Monitool<span>Panel</span></div>
             </div>
 
-            <div class="col-sm-6">
-                <label ng-bind="storage.email"></label>
+            <div class="col-sm-6 user-box">
+                <div class="email">
+                    <div class="icon"><img src="/assets/img/user.png" width="70"/></div>
+                    <label ng-bind="storage.email"></label>
 
-                <div style="font-size: 0.7em;">
-                    <label>Token:</label> <span ng-bind="storage.token"></span>
+                    <div class="token">
+                        <label>Token:</label> <span ng-bind="storage.token"></span>
+                    </div>
+
                 </div>
 
-                <a class="btn btn-default" ng-click="logout()">Logout</a>
+                <div class="btn-group logout pull-right">
+                    <a class="btn btn-default" ng-click="logout()">Logout</a>
+                </div>
 
             </div>
         </div>
