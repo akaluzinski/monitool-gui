@@ -57,9 +57,6 @@
             this.loadingBar = LoadingBar;
             this.location = Location;
 
-            $('#chart-container').height(($(document).height() - $('#chart-container').offset().top) * 0.9);
-            $('#chart-container').width(($(document).width() - $('#chart-container').offset().left) * 0.9);
-
             this._super($scope);
         },
 
@@ -152,8 +149,6 @@
                 $scope.sendRequest("date ASC");
             };
 
-
-
             $scope.sendRequest = function(order)
             {
                 var results = [];
@@ -230,7 +225,7 @@
                             $scope.chartData[i].min *= 0.7;
                         }
                     }
-                    
+                    $scope.changeChart($scope.chartType);
                     $scope.preapareChart();
 
                     if( $scope.refreshChartPromise !== null ) {
@@ -279,7 +274,7 @@
                     filter.limit = limit;
                 }
                 
-                filter.where.sensorId = $scope.hostId;
+                filter.where.hostId = $scope.hostId;
 
                 var startDate = null, endDate = null;
                 if($scope.search.startDate != "") {
@@ -330,11 +325,11 @@
                 };
                 
                 if( $scope.where !== null && $scope.where !== "" ) {
-                    $scope.where.sensorId = $scope.hostId;
+                    $scope.where.hostd = $scope.hostId;
                     filter.where = $scope.where;
                 } else {
                     filter.where = {};
-                    filter.where.sensorId = $scope.hostId;
+                    filter.where.hostId = $scope.hostId;
                 }
                 params.filter = JSON.stringify(filter);
                 
@@ -350,7 +345,7 @@
                     function(response){
                         $scope.primaryData = response;
                         angular.forEach($scope.primaryData, function(value, key){
-                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
+                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['hostId']);
                             $scope.primaryData[key]['date'] = new Date(value['date']);
                         });
                     }
@@ -393,19 +388,19 @@
             };
             
 
-            $scope.getSensorName = function(sensorId) {
+            $scope.getSensorName = function(hostId) {
 
                 if($scope.nodes == undefined) {
                     return 'MISSING_NODES';
                 }
-                var host = ($.grep($scope.nodes, function(e){ return e.id == sensorId; }))[0];
+                var host = ($.grep($scope.nodes, function(e){ return e.id == hostId; }))[0];
                 if(host != undefined) {
                     return host.name;
                 }
                 return 'MISSING_HOST';
             };
 
-            $scope.getSensorId = function(hostName, first) {
+            $scope.gethostId = function(hostName, first) {
                 var hosts = ($.grep($scope.nodes, function(e){ return e.name.toLowerCase().indexOf( hostName.toLowerCase() ) !== -1; }));
                 if( typeof first !== "undefined" ) {
                     var ids = [];
@@ -435,7 +430,6 @@
             };
 
             window.onresize = function(event) {
-                $('#chart-container').width(($(window).width() - $('#chart-container').offset().left) * 0.9);
                 $scope.preapareChart();
             };
             

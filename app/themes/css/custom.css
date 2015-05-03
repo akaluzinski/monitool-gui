@@ -1,117 +1,203 @@
+@import url(http://fonts.googleapis.com/css?family=Exo:100,200,400);
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:700,400,300);
+
 body {
-    padding: 80px;
+    margin: 0;
+    padding: 0;
+    background: url('/assets/img/background_pattern.jpg');
 }
 
-.checkout-form label {
+body .container {
+    color: #fff;
+    font-family: Arial;
     font-size: 12px;
-    font-weight: normal;
 }
-
-.form-group-inline .form-group {
-    display: inline-block;
-}
-
-.form-group-inline label {
-    display: inline-block;
-    position: relative;
-    top: 11px;
-    left: 6px;
-}
-
-.form-group-inline input[type="radio"], .form-group-inline input[type="checkbox"]  {
-    display: inline-block;
-    width: auto;
-    float: left;
-}
-
-.basket-box {
-    background: #F2F6F7;
-    padding-bottom: 15px;
-}
-
-.basket-box hr {
-    border-color: #CCC;
-}
-
-[data-type="basket-product"] .clearfix{
-    margin: 8px 0;
-}
-
-.basket-box img {
+.grad{
+    position: absolute;
+    top: 0px;
+    left: 0px;
     width: 100%;
+    height: 100%;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.65))); /* Chrome,Safari4+ */
+    z-index: 1;
+    opacity: 0.7;
 }
 
-.basket-blue-text {
-    color: #2B4E7C;
-}
-
-.product-name {
-    font-size: 16px;
-    margin-top: 12px;
-}
-
-.total-price {
-    color: #FF181A;
-    font-size: 16px;
-}
-
-body {
-    padding-top: 40px;
-    padding-bottom: 40px;
-    background-color: #eee;
-}
-
-h1, h2 {
-    text-align: center;
-}
-
-.form-signin {
-    max-width: 330px;
-    padding: 15px;
-    margin: 0 auto;
-}
-.form-signin .form-signin-heading,
-.form-signin .checkbox {
-    margin-bottom: 10px;
-}
-.form-signin .checkbox {
-    font-weight: normal;
-}
-.form-signin .form-control {
-    position: relative;
-    height: auto;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    padding: 10px;
-    font-size: 16px;
-}
-.form-signin .form-control:focus {
+.header{
     z-index: 2;
 }
-.form-signin input[type="email"] {
-    margin-bottom: -1px;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
+
+.header div {
+    float: right;
+    color: #fff;
+    font-family: 'Exo', sans-serif;
+    font-size: 4.0em;
+    font-weight: 200;
+    margin-top: 30px;
 }
-.form-signin input[type="password"] {
-    margin-bottom: 10px;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-.disabled {
-    pointer-events: none;
-    cursor: default;
-    background-color: #EFEFEF;
+
+.header div span {
+    color: #5379fa !important;
+}
+
+.login{
+    padding: 10px;
+    z-index: 2;
+}
+
+.login input[type=email]{
+    width: 100%;
+    height: 30px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 2px;
+    color: #fff;
+    font-family: 'Exo', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    padding: 4px;
+}
+
+.login input[type=password]{
+    width: 100%;
+    height: 30px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 2px;
+    color: #fff;
+    font-family: 'Exo', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    padding: 4px;
+    margin-top: 10px;
+}
+
+.login input[type=button]{
+    width: 100%;
+    height: 35px;
+    background: #fff;
+    border: 1px solid #fff;
+    cursor: pointer;
+    border-radius: 2px;
+    color: #444E7E;
+    font-family: 'Exo', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    padding: 6px;
+    margin-top: 10px;
+}
+
+.login input[type=button]:hover{
+    opacity: 0.8;
+}
+
+.login input[type=button]:active{
+    opacity: 0.6;
+}
+
+.login input[type=email]:focus {
+    outline: none;
+    border: 1px solid rgba(255,255,255,0.9);
+}
+
+.login input[type=password]:focus{
+    outline: none;
+    border: 1px solid rgba(255,255,255,0.9);
+}
+
+.login input[type=button]:focus{
+    outline: none;
+}
+
+::-webkit-input-placeholder{
+    color: rgba(255,255,255,0.6);
+}
+
+::-moz-input-placeholder{
+    color: rgba(255,255,255,0.6);
 }
 
 @media all and (max-width: 1200px) {
-.table-responsive {
-    width: 100%;
-    margin-bottom: 15px;
-    overflow-y: hidden;
-    overflow-x: scroll;
-    -ms-overflow-style: -ms-autohiding-scrollbar;
-    border: 1px solid #DDD;
-    -webkit-overflow-scrolling: touch;
+    .table-responsive {
+        width: 100%;
+        margin-bottom: 15px;
+        overflow-y: hidden;
+        overflow-x: scroll;
+        -ms-overflow-style: -ms-autohiding-scrollbar;
+        border: 1px solid #DDD;
+        -webkit-overflow-scrolling: touch;
+    }
 }
+
+.user-box {
+    padding-top: 27px;
+}
+.user-box .email {
+    float: left;
+}
+.user-box .email > label {
+    font-size: 1.5em;
+    font-weight: normal;
+    font-family: 'Exo', Arial;
+    margin-left: 20px;
+    margin-top: 10px;
+}
+.user-box .email .icon {
+    background: #fff;
+    float: left;
+    border-radius: 45px;
+}
+
+.user-box div.token {
+    font-size: 0.7em;
+    float: left;
+    margin-left: 20px;
+}
+.user-box .btn-group.logout {
+    margin-right: 30px;
+    margin-top: -20px;
+    margin-bottom: 20px;
+}
+
+.submenuType .btn, .statTypeMenu .btn {
+    border-radius: 4px!important;
+    margin: 0px 5px;
+}
+
+.btn-info {
+    background-color: #5379fa;
+    border-color: #4A6CE0;
+}
+.btn-info:hover {
+    background-color: #4872fa;
+    border-color: #476efa;
+}
+.btn-info[disabled] {
+    background-color: #5379fa;
+    border-color: #4A6CE0;
+}
+.searchButton button {
+    padding: 10px 30px;
+}
+
+.bootstrap-datetimepicker-widget ul {
+    color: #000!important;
+    text-align: center!important;
+}
+.datapicker-months .month {
+    padding: 3px;
+}
+.btn.active {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+.btn a {
+    color: #2a2a2a;
+}
+.dateDisabled {
+    pointer-events: none;
+    opacity: 0.5;
+    background: #CCC;
+    border-radius: 4px;
 }

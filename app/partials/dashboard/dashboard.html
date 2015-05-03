@@ -1,14 +1,14 @@
 <div class="col-sm-12 col-md-7" style="margin-bottom:20px;">
-    <ul class="btn-group">
-        <li class="btn btn-default active"><a showtab="" href="#primaryStats-wrapper" data-toggle="tab" ng-click="activeTable=0">Base</a></li>
-        <li class="btn btn-default"><a showtab="" href="#complexStats-wrapper" data-toggle="tab" ng-click="activeTable=1">Complex</a></li>
+    <ul class="btn-group statTypeMenu">
+        <li class="btn btn-default active"><a showtab="" href="#primaryStats-wrapper" data-toggle="tab" ng-click="activeTable='primary'">Base</a></li>
+        <li class="btn btn-default"><a showtab="" href="#complexStats-wrapper" data-toggle="tab" ng-click="activeTable='complex'">Complex</a></li>
     </ul>
     <br/>
     <div class="tab-content">
         <br/>
-        <div id="primaryStats-wrapper" class="tab-pane" ng-class="{active: activeTable==0}">
+        <div id="primaryStats-wrapper" class="tab-pane" ng-class="{active: activeTable=='primary'}">
             <div class="table-wrapper primaryStats-wrapper table-responsive">
-                <table id="primaryStats" class="table table-striped" >
+                <table id="primaryStats" class="table" >
                     <thead>
                         <tr>
                             <th class="hidden">ID</th>
@@ -25,7 +25,7 @@
                             <td ng-repeat="name in sensorTypes">{{ host[name+'Load'] | number: 3 }}</td>
                             <td>{{host['date'] | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                             <td>
-                                <button ng-click="statDetails(host['sensorId'])">
+                                <button class="btn btn-xs btn-default" ng-click="statDetails(host['hostId'])">
                                     <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
                                 </button>
                             </td>
@@ -50,13 +50,13 @@
                 </div>
             </div>
         </div>
-        <div id="complexStats-wrapper" class="tab-pane" ng-class="{active: activeTable==1}">
+        <div id="complexStats-wrapper" class="tab-pane" ng-class="{active: activeTable!='primary'}">
             <div class="table-wrapper complexStats-wrapper table-responsive">
-                <table id="complexStats" class="table table-striped" >
+                <table id="complexStats" class="table" >
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Type</th>
+                            <th>Stat name</th>
+                            <th>Hostname</th>
                             <th>Period</th>
                             <th>Interval</th>
                             <th>Options</th>
@@ -64,16 +64,16 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="host in complexData" >
+                            <td>{{ host['name'] }}</td>
                             <td>{{ host['sensorName'] }}</td>
-                            <td>{{ host['itemType'] }}</td>
                             <td>{{ host['period']/1000 }}s</td>
                             <td>{{ host['repeat']/1000 }}s</td>
                             <td>
-                                <button ng-click="complexStatDetails(host['id'])">
+                                <button class="btn btn-xs btn-default" ng-click="complexStatDetails(host['name'], host['hostId'])">
                                     <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
                                 </button>
 
-                                <button ng-show="host['removeAllow']" ng-click="removeComplexData(host['id'])">
+                                <button class="btn btn-xs btn-default" ng-show="host['removeAllow']" ng-click="removeComplex(host['hostId'], host['id'])">
                                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                                 </button>
                             </td>
@@ -100,14 +100,15 @@
         </div>
     </div>
 </div>
-<div class="col-sm-12 col-md-5 ">
-    <ul class="btn-group">
-        <li class="btn btn-default active"><a showtab="" href="#searching-wrapper" data-toggle="tab">Searching</a></li>
-        <li class="btn btn-default" ng-if="activeTable==1"><a showtab="" href="#createComplexStat-wrapper" data-toggle="tab">Create complex stat</a></li>
+<div class="col-sm-12 col-md-5">
+    <ul class="btn-group submenuType">
+        <li class="btn btn-default active" ng-class="{active : activeTable == 'primary'}" ng-show="activeTable == 'primary'"><a showtab="" href="#searching-wrapper" data-toggle="tab">Searching</a></li>
+        <li class="btn btn-default" ng-class="{active : activeTable == 'complex'}" ng-if="activeTable=='complex'"><a showtab="" href="#searchComplexStat-wrapper" data-toggle="tab">Searching</a></li>
+        <li class="btn btn-default" ng-if="activeTable=='complex'"><a showtab="" href="#createComplexStat-wrapper" data-toggle="tab">Create complex stat</a></li>
     </ul>
     <br/>
     <div class="tab-content">
-        <div id="searching-wrapper" class="tab-pane active">
+        <div id="searching-wrapper" class="tab-pane" ng-class="{active : activeTable == 'primary'}">
             <h2>Searching</h2>
             <br/>
             <div class="">
@@ -123,24 +124,64 @@
                 <div class="col-sm-12">
                     <h4>Data range</h4>
                 </div>
-                <div class="col-sm-5">
+                <div class="col-sm-6">
                     <date-time-picker ng-model="search.startDate" data-id="startDate" ></date-time-picker>
                 </div>
-                <div class="col-sm-5" >
-                    <date-time-picker ng-model="search.endDate" data-id="endDate" ng-class="{'disabled':search.todayDate}" ></date-time-picker>
+                <div class="col-sm-6" >
+                    <date-time-picker ng-model="search.endDate" data-id="endDate" ng-class="{'dateDisabled':search.todayDate}" ></date-time-picker>
                 </div>
-                <div class="col-sm-2">
-                    <input type="checkbox" class="form-control checkbox" ng-model="search.todayDate" name="endToday" id="endToday">
+                <div class="col-sm-2 pull-right">
+                    <input type="checkbox" class="checkbox" style="float: left; margin-left: 4px;" ng-model="search.todayDate" name="endToday" id="endToday">
+                    <div style="float: left;line-height: 2.0em;margin-left: 4px;">now</div>
                 </div>
-                <div class="col-sm-12">
+                <div class="col-sm-12 searchButton">
                     <button class="btn btn-info" ng-click="sendRequest()">Search</button>
                 </div>
-
             </div>
-
-
         </div>
-        <div id="createComplexStat-wrapper" class="tab-pane">
+        <div id="searchComplexStat-wrapper" ng-if="activeTable == 'complex'" ng-class="{active : activeTable == 'complex'}" class="tab-pane">
+            <h2>Searching</h2>
+            <br/>
+            <div class="">
+                <div class="col-sm-7">
+                    <input id="hostName" ng-model="search.statName" placeholder="search stat name" name="hostName" class="form-control col-xs-12 col-sm-5" />
+                </div>
+                <div class="col-sm-5">
+                    <select id="hostId" name="hostId" class="form-control col-xs-12 col-sm-5" ng-model="search.hostId" >
+                        <option value="">Select node</option>
+                        <option ng-repeat="host in nodes | unique:'id'" value="{{ host['id'] }}">{{ host['name'] }}</option>
+                    </select>
+                </div>
+
+                <div class="col-sm-12 searchButton" style="margin-top:20px;">
+                    <button class="btn btn-info" ng-click="sendComplexRequest()">Search</button>
+                </div>
+            </div>
+        </div>
+        <div id="createComplexStat-wrapper" ng-if="activeTable == 'complex'" class="tab-pane">
+            <h2>Create complex stat</h2>
+            <br/>
+                <div class="col-sm-6">
+                    <select id="hostId" name="hostId" class="form-control col-xs-12 col-sm-5" ng-model="complexStat.hostId" >
+                        <option value="">Select node</option>
+                        <option ng-repeat="host in nodes | unique:'id'" value="{{ host['id'] }}">{{ host['name'] }}</option>
+                    </select>
+                </div>
+                <div class="col-sm-6">
+                    <input type="text" name="statName" class="form-control col-xs-12" placeholder="Stat name" ng-model="complexStat.name"/>
+                </div>
+
+                <div class="col-sm-6" style="margin-top: 20px;">
+                    <input type="numeric" name="period" class="form-control col-xs-12" placeholder="Period [ms]" ng-model="complexStat.period"/>
+                </div>
+
+                <div class="col-sm-6" style="margin-top: 20px;">
+                    <input type="numeric" name="interval" class="form-control col-xs-12" placeholder="Interval [ms]" ng-model="complexStat.interval"/>
+                </div>
+
+            <div class="col-sm-12 searchButton" style="margin-top: 20px;">
+                <button class="btn btn-info" ng-click="createComplex()">Create</button>
+            </div>
 
         </div>
     </div>

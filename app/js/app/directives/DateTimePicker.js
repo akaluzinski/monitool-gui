@@ -29,7 +29,7 @@
                     '</span>' +
                 '</div>',
             link: function(scope, element, attrs) {
-                element.datetimepicker({defaultDate:scope.val});
+                element.datetimepicker({defaultDate:scope.val, inline: false});
 
                 element.find('input').bind('blur keyup change', function(){
                     scope.ngModel = element.find('input').val();

@@ -3,7 +3,7 @@
     <div class="">
         <div id="measurement-table-wrapper" class="">
             <div class="table-wrapper table-responsive">
-                <table id="measurement-table" class="table table-striped" >
+                <table id="measurement-table" class="table" >
                     <thead>
                         <tr>
                             <th ng-repeat="name in sensorTypes">{{name | uppercase}}</th>
@@ -61,25 +61,27 @@
                 <date-time-picker ng-model="search.startDate" data-id="startDate" data-value="{{search.startDate}}"></date-time-picker>
             </div>
             <div class="col-sm-5" >
-                <date-time-picker ng-model="search.endDate" data-id="endDate" ng-class="{'disabled':search.todayDate}" ></date-time-picker>
+                <date-time-picker ng-model="search.endDate" data-id="endDate" ng-class="{'dataDisabled':search.todayDate}" ></date-time-picker>
             </div>
             <div class="col-sm-2">
-                <input type="checkbox" class="form-control checkbox" ng-model="search.todayDate" name="endToday" id="endToday">
+
+                <input type="checkbox" class="checkbox" style="float: left; margin-left: 4px;" ng-model="search.todayDate" name="endToday" id="endToday">
+                <div style="float: left;line-height: 2.0em;margin-left: 4px;">now</div>
             </div>
-            <div class="col-sm-12">
-                <button class="btn btn-info" ng-click="changeParam()">Save</button>
+            <div class="col-sm-12 searchButton" style="margin-top: 20px;">
+                <button class="btn btn-info" ng-click="changeParam()">Search</button>
             </div>
         </div>
     </div>
     <div id="charts-wrapper" class="col-xs-12" style="margin-top:20px;">
-        <ul class="btn-group">
+        <ul class="btn-group pull-right" style="margin-right: 20px;">
             <li class="btn btn-default" ng-repeat="type in sensorTypes" ng-class="{'active':$index === chartType}">
                 <a id="{{type}}-chart-wrapper-btn" ng-click="changeChart($index);">{{type|uppercase}}</a>
             </li>
         </ul>
         <br/>
         <div class="col-xs-12">
-            <div id="chart-container">
+            <div id="chart-container" style="background-color: #fff; padding: 10px;">
                 <div class="loading"></div>
                 <div id="chart" 
                      style="width:100%;height:300px;"

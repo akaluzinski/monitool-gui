@@ -57,7 +57,7 @@
             $scope.searchNode = '';
             $scope.searchId = '!!';
 
-            $scope.activeTable = 0;
+            $scope.activeTable = 'primary';
             
             $scope.where = null;
             
@@ -66,10 +66,32 @@
             $scope.complexPage = 0;
             $scope.complexLimit = 5;
 
+            $scope.complexStat = {};
+
             $scope.sensorTypes = ["cpu", "mem", "disc"];
             $scope.hosts = [];
 
             $scope.token = dataStorage.getToken() || null;
+
+
+            $scope.sendComplexRequest = function()
+            {
+                var whereFilter = {};
+                if($scope.search.statName != "") {
+                    whereFilter = {
+                        name : {
+                            like: $scope.search.statName
+                        }
+                    };
+                }
+
+                if($scope.search.hostId != "" && $scope.search.hostId != undefined) {
+                    whereFilter.hostId = $scope.search.hostId;
+                }
+
+                $scope.where = whereFilter;
+                $scope.getComplexData($scope.complexPage*$scope.complexLimit)
+            };
 
             $scope.sendRequest = function()
             {
@@ -79,7 +101,7 @@
                         $scope.page = 0;
                         $scope.primaryData = response;
                         angular.forEach($scope.primaryData, function(value, key){
-                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
+                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['hostId']);
                             $scope.primaryData[key]['date'] = new Date(value['date']);
                         });
                     }
@@ -102,19 +124,19 @@
                 if($scope.search.nodeName != "") {
                     var sensorsId = $scope.getSensorId($scope.search.nodeName, false);
                     if( sensorsId.length > 1 ) {
-                        delete filter.where.sensorId;
+                        delete filter.where.hostId;
                         filter.where.or = [];
                         for( var i in sensorsId ) {
-                            filter.where.or.push({'sensorId':sensorsId[i]});
+                            filter.where.or.push({'hostId':sensorsId[i]});
                         }
                     } else {
                         delete filter.where.or;
-                        filter.where.sensorId = sensorsId[0];
+                        filter.where.hostId = sensorsId[0];
                     }
                 }
 
                 if($scope.search.node != "") {
-                    filter.where.sensorId = $scope.search.node;
+                    filter.where.hostId = $scope.search.node;
                 }
 
                 var startDate = null, endDate = null;
@@ -178,9 +200,10 @@
                 promiseChain.addPromise(
                     dataResource.find(params).$promise,
                     function(response){
+                        console.log(response);
                         $scope.primaryData = response;
                         angular.forEach($scope.primaryData, function(value, key){
-                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
+                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['hostId']);
                             $scope.primaryData[key]['date'] = new Date(value['date']);
                         });
                     }
@@ -221,7 +244,7 @@
                         var user_id = dataStorage.getIdentity();
                         $scope.complexData = response;
                         angular.forEach($scope.complexData, function(value, key){
-                            $scope.complexData[key]['sensorName'] = $scope.getSensorName(value['sensorId']);
+                            $scope.complexData[key]['sensorName'] = $scope.getSensorName(value['hostId']);
                             $scope.complexData[key]['date'] = new Date(value['date']);
                             $scope.complexData[key]['removeAllow'] = (user_id == value['userId'] ? true : false);
                         });
@@ -232,18 +255,6 @@
                     // do some stuff after request
                 });
 
-            };
-
-            $scope.removeComplexData = function(id) {
-                complexDataResource.remove({id: id}).$promise.then(
-                    function(response) {
-                        $scope.getData($scope.page);
-                        $scope.getComplexData($scope.page);
-                    },function(response) {
-                        notification.error(response);
-                    }
-
-                );
             };
 
             $scope.getSensors = function () {
@@ -327,12 +338,53 @@
                 $location.path( "/measurement/" + hostId ).replace();
             };
 
-            $scope.complexStatDetails = function(hostId) {
-                $location.path( "/complex/" + hostId ).replace();
+            $scope.complexStatDetails = function(hostName, hostId) {
+                $location.path( "/complex/" + hostName + "/" + hostId ).replace();
             };
 
             $scope.getData($scope.page);
             $scope.getComplexData($scope.page);
+
+            $scope.createComplex = function()
+            {
+                sensorsResource.createComplex({
+                    instance: {
+                        period: $scope.complexStat.period,
+                        repeat: $scope.complexStat.interval,
+                        name: $scope.complexStat.name
+                    },
+                    hostId: $scope.complexStat.hostId,
+                    access_token: $scope.token
+                }).$promise.then(
+                    function(response) {
+                        $scope.getData($scope.page);
+                        $scope.getComplexData($scope.page);
+
+                        notification.success("Complex stats entry has been created");
+
+                    },function(response) {
+                        notification.error(response);
+                    }
+
+                );
+            };
+
+            $scope.removeComplex = function(hostId, id) {
+                sensorsResource.removeComplex({
+                    hostId: hostId,
+                    statId: id,
+                    access_token: $scope.token
+                }).$promise.then(
+                    function(response) {
+                        $scope.getData($scope.page);
+                        $scope.getComplexData($scope.page);
+                        notification.success("Complex stats entry has been removed");
+                    },function(response) {
+                        notification.error(response);
+                    }
+
+                );
+            };
 
         }
 
