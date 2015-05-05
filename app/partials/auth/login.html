@@ -1,0 +1,23 @@
+<div class="grad"></div>
+<div class="row" style="margin-top: 30%;">
+    <div class="col-sm-6 header">
+        <div>Monitool<span>Access</span></div>
+    </div>
+    <div class="col-sm-6 login">
+        <div class="col-sm-7">
+            <input type="email" placeholder="Email address" ng-model="loginData.email" required autofocus><br>
+            <input type="password" placeholder="Password" ng-model="loginData.password"><br>
+            <input type="button" ng-click="login()" value="Sign in">
+        </div>
+        <div class="col-sm-7" style="margin-top: 90px;">
+            <div class="row">
+                <div class="col-md-8">
+                    <p style="font-size: 1.2em; font-family: 'Exo', Arial;">Don't have an account?</p>
+                </div>
+                <div class="col-md-4" style="margin-top: -18px;">
+                    <input type="button" ng-click="goTo($event,'register')" value="Sign up!">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
