@@ -19,7 +19,7 @@
             {
                 create: {
                     method: 'POST',
-                    isArray: true
+                    isArray: false
                 },
                 findToken : {
                     params: {

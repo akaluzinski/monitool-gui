@@ -62,10 +62,14 @@
                         password: $scope.registerData.password
                     }
                 ).$promise.then(function(response){
+                    console.log( 'ok' );
+                    console.log( response );
                     $location.path('/login').replace();
                     $scope.loginData = {};
                     notification.success("User has been created. You can log in now!");
                 }, function(response){
+                    console.log( 'error' );
+                    console.log( response );
                     notification.error(response.data.error.message);
                 });
 
