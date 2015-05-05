@@ -153,8 +153,9 @@
             {
                 var results = [];
                 var limit = -1; // no limit for data from server
+                var params = $scope.getParams(order,limit);
                 promiseChain.addPromise(
-                    dataResource.find($scope.getParams(order,limit)).$promise,
+                    dataResource.find(params).$promise,
                     function(response){
                         angular.forEach(response, function(value, key){
                             results[key] = {};
@@ -165,7 +166,14 @@
                                 results[key][type+'Load'] = value[type+'Load'];
                             }
                         });
-                        var objs = response.slice(-1*$scope.limit);
+                        
+                        if( $scope.page == 0 ) {
+                            var objs = results.slice(-1*($scope.limit));
+                        } else if( $scope.page*$scope.limit < results.length/2 ) {
+                            var objs = results.slice(-1*($scope.limit*($scope.page+1)),-1*($scope.limit*$scope.page));
+                        } else {
+                            var objs = results.slice(($scope.limit*($scope.page)),($scope.limit*($scope.page+1)));
+                        }
                         $scope.primaryData = objs.sort(compareObj);
                     }
                 );
@@ -235,7 +243,6 @@
                         $scope.sendRequest(order);
                     },$scope.delay);
                 });
-
             };
 
             $scope.preapareChart = function() {
@@ -325,7 +332,7 @@
                 };
                 
                 if( $scope.where !== null && $scope.where !== "" ) {
-                    $scope.where.hostd = $scope.hostId;
+                    $scope.where.hostId = $scope.hostId;
                     filter.where = $scope.where;
                 } else {
                     filter.where = {};
@@ -339,24 +346,20 @@
                         $scope.nodes = response;
                     }
                 );
-
+        
                 promiseChain.addPromise(
                     dataResource.find(params).$promise,
                     function(response){
-                        $scope.primaryData = response;
-                        angular.forEach($scope.primaryData, function(value, key){
-                            $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['hostId']);
-                            $scope.primaryData[key]['date'] = new Date(value['date']);
+                        angular.forEach(response, function(value, key){
+                            response[key]['sensorName'] = $scope.getSensorName(value['hostId']);
+                            response[key]['date'] = new Date(value['date']);
                         });
+                        $scope.primaryData = response;
                     }
                 );
                 promiseChain.resolve(function(){
                     loadingBar.complete();
-                    // do some stuff after request
                 });
-
-
-
             };
 
             $scope.getSensors = function () {
@@ -367,7 +370,6 @@
                         $scope.nodes = response;
                         return response;
                     }, function(response){
-
                     }
                 );
 

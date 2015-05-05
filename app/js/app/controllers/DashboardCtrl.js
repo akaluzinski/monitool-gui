@@ -200,7 +200,6 @@
                 promiseChain.addPromise(
                     dataResource.find(params).$promise,
                     function(response){
-                        console.log(response);
                         $scope.primaryData = response;
                         angular.forEach($scope.primaryData, function(value, key){
                             $scope.primaryData[key]['sensorName'] = $scope.getSensorName(value['hostId']);

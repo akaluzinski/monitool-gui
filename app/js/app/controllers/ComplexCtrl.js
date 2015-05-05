@@ -155,10 +155,17 @@
             $scope.sendRequest = function(order)
             {
                 var results = [];
-                var limit = -1; // no limit for data from server
+                var filter = {
+                    order:    order
+                };
+                
                 promiseChain.addPromise(
-                    //change to complex
-                    sensorsResource.getComplex($scope.getParams(order,limit)).$promise,
+                    sensorsResource.getComplex({
+                        hostId: $scope.hostId,
+                        statName: $scope.hostName,
+                        access_token: $scope.token,
+                        filter: JSON.stringify(filter)
+                    }).$promise,
                     function(response){
                         angular.forEach(response, function(value, key){
                             results[key] = {};
@@ -169,7 +176,14 @@
                                 results[key][type+'Load'] = value[type+'Load'];
                             }
                         });
-                        var objs = response.slice(-1*$scope.limit);
+                        
+                        if( $scope.page == 0 ) {
+                            var objs = results.slice(-1*($scope.limit));
+                        } else if( $scope.page*$scope.limit < results.length/2 ) {
+                            var objs = results.slice(-1*($scope.limit*($scope.page+1)),-1*($scope.limit*$scope.page));
+                        } else {
+                            var objs = results.slice(($scope.limit*($scope.page)),($scope.limit*($scope.page+1)));
+                        }
                         $scope.complexData = objs.sort(compareObj);
                     }
                 );
@@ -276,25 +290,18 @@
                 }
             };
 
-            $scope.getData = function () {
+            $scope.getData = function (skip) {
                 loadingBar.start();
                 
-                var params = {
-                    access_token: $scope.token,
-                    filter: ''
-                };
+                if( typeof skip === "undefined" ) {
+                    skip = 0;
+                }
                 var filter = {
+                    limit:    $scope.limit, 
+                    skip:     skip, 
                     order:    "date DESC"
                 };
-                
-                if( $scope.where !== null && $scope.where !== "" ) {
-                    $scope.where.hostId = $scope.hostId;
-                    filter.where = $scope.where;
-                } else {
-                    filter.where = {};
-                    filter.where.hostId = $scope.hostId;
-                }
-                params.filter = JSON.stringify(filter);
+                filter = JSON.stringify(filter);
 
                 promiseChain.addPromise(
                     complexDataResource.find({
@@ -312,14 +319,14 @@
                     sensorsResource.getComplex({
                         hostId: $scope.hostId,
                         statName: $scope.hostName,
-                        access_token: $scope.token
+                        access_token: $scope.token,
+                        filter: filter
                     }).$promise,
                     function(response){
-                        $scope.complexData = response;
-                        $scope.parseData($scope.page, $scope.limit)
-                        angular.forEach($scope.complexData, function(value, key){
-                            $scope.complexData[key]['date'] = new Date(value['date']);
+                        angular.forEach(response, function(value, key){
+                            response[key]['date'] = new Date(value['date']);
                         });
+                        $scope.complexData = response;
                     }
                 );
 
@@ -348,10 +355,14 @@
 
             $scope.nextResults = function() {
                 $scope.page += 1;
+                $scope.getData($scope.page*$scope.limit);
             };
 
             $scope.prevResults = function() {
                 $scope.page -= 1;
+                if($scope.page >= 0) {
+                    $scope.getData($scope.page*$scope.limit);
+                }
             };
 
             $scope.parseData = function(page, limit) {
@@ -414,8 +425,6 @@
                     filter.limit = limit;
                 }
 
-                //filter.where.hostId = $scope.hostId;
-
                 var startDate = null, endDate = null;
                 if($scope.search.startDate != "") {
                     startDate = { 'gt': new Date($scope.search.startDate) };
@@ -474,7 +483,6 @@
             // init flot chart
             plot = $.plot($('#chart'), [[]], $scope.chartOptions);
             // get data fot flot chart
-            //$scope.getData();
             $scope.sendRequest("date ASC");
         }
 

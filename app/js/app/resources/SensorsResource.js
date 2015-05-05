@@ -48,7 +48,8 @@
                     params: {
                         hostId: '@hostId',
                         statName: '@statName',
-                        access_token: '@access_token'
+                        access_token: '@access_token',
+                        filter: '{ "limit": 10 }'
                     },
                     method: 'GET',
                     isArray: true
