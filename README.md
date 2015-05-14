@@ -23,7 +23,7 @@ npm install -g bower
 ```
 To run project as standalone web application, having http server is obligatory. We can install it from npm package, http-server.
 ```
-npm install http-server
+npm install -g http-server
 ```
 
 ## Clone and build project ##
